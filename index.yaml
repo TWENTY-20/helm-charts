@@ -1,0 +1,13 @@
+apiVersion: v1
+entries:
+  checkmk-server:
+  - apiVersion: v2
+    created: "2022-06-10T21:56:23.083781476+02:00"
+    description: checkmk-server
+    digest: 1c6bc7d8a96a4847e06cad43ef1d15f9a30aebcfdd6183d1bb96833f42583de3
+    name: checkmk-server
+    type: application
+    urls:
+    - https://github.com/TWENTY-20/helm-charts/releases/download/checkmk-server-0.1.0/checkmk-server-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-06-10T21:56:23.083863239+02:00"
