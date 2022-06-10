@@ -1,0 +1,15 @@
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+/out/
+*/out
+
+### VS Code ###
+.vscode/
+
+**/.DS_Store
+**/kubeconfig.json
+**/key.txt
+**/env*.sh

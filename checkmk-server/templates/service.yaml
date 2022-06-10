@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "checkmk-server.fullname" . }}
+  labels:
+    {{- include "checkmk-server.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    {{if .Values.CheckmkSettings.livestatus.enabled}}
+    - port: {{ .Values.CheckmkSettings.livestatus.port }}
+      targetPort: {{ .Values.CheckmkSettings.livestatus.port }}
+      protocol: TCP
+      name: livestatus
+    {{ end }}
+  selector:
+    {{- include "checkmk-server.selectorLabels" . | nindent 4 }}
+  clusterIP: None

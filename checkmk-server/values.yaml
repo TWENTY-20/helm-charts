@@ -1,0 +1,40 @@
+image:
+  # supported versions: check-mk-raw, check-mk-free
+  repository: checkmk/check-mk-free
+  pullPolicy: IfNotPresent
+  tag: 2.1.0p2
+service:
+  type: ClusterIP
+  port: 80
+ingress:
+  enabled: false
+  # className: nginx
+  annotations:
+  #  kubernetes.io/ingress.class: nginx
+  #  kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: monitoring.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: chart-example-tls
+      hosts:
+        - monitoring.example.com
+resources:
+  limits:
+    #cpu: 2000m
+    memory: 4000Mi
+  requests:
+    cpu: 250m
+    memory: 2000Mi
+PersistentVolumeClaim:
+  classname: disk-default-class
+  type: SSD
+  size: 16Gi
+CheckmkSettings:
+  siteid: cmk
+  sitepassword: cmk
+  livestatus:
+    enabled: false
+    port: 6557

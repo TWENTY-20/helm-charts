@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "checkmk-server.fullname" . }}
+  labels:
+    {{- include "checkmk-server.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "checkmk-server.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "checkmk-server.selectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: Always
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext: {}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+            {{if .Values.CheckmkSettings.livestatus.enabled}}
+            - name: livestatus
+              containerPort: {{ .Values.CheckmkSettings.livestatus.port }}
+              protocol: TCP
+            {{ end }}
+          # Not supported at the moment
+          #livenessProbe:
+          #  httpGet:
+          #    path: /
+          #    port: http
+          #readinessProbe:
+          #  httpGet:
+          #    path: /
+          #    port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: CMK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: checkmk
+                  key: password
+            - name: CMK_SITE_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: checkmk
+                  key: siteid
+          volumeMounts:
+            - mountPath: "/omd/sites"
+              name: checkmk-pv-storage
+            - mountPath: /opt/omd/sites/{{ .Values.CheckmkSettings.siteid }}/tmp
+              name: tmp
+      volumes:
+        - name: checkmk-pv-storage
+          persistentVolumeClaim:
+            claimName: checkmk-pv-claim
+        - name: tmp
+          emptyDir:
+            medium: Memory
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

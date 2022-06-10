@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: checkmk-pv-claim
+  annotations:
+    everest.io/disk-volume-type: {{ .Values.PersistentVolumeClaim.type }}
+spec:
+  # Please adjust to your system
+  storageClassName: {{ .Values.PersistentVolumeClaim.classname }}
+  resources:
+    requests:
+      # Rather size larger for production environments
+      storage: {{ .Values.PersistentVolumeClaim.size }}
+  accessModes:
+    - ReadWriteOnce
