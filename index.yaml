@@ -1,0 +1,21 @@
+apiVersion: v1
+entries:
+  espocrm:
+  - apiVersion: v2
+    appVersion: 9.0.8
+    created: "2025-04-30T18:58:53.79113976+02:00"
+    description: A Helm chart for deploying EspoCRM on Kubernetes
+    digest: 214d2668146bbaf49493971ff8a1c4866074fd5c78469bf5010f0ff42bce1463
+    keywords:
+    - espocrm
+    - crm
+    - helm
+    - kubernetes
+    name: espocrm
+    sources:
+    - https://github.com/espocrm/espocrm
+    type: application
+    urls:
+    - https://twenty-20.github.io/helm-charts/espocrm-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-04-30T18:58:53.790187292+02:00"
