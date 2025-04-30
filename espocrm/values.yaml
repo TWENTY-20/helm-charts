@@ -1,0 +1,441 @@
+# Number of desired pod replicas
+replicaCount: 1
+
+image:
+  # Image repository for EspoCRM
+  repository: espocrm/espocrm
+  pullPolicy: Always
+  tag: "9.0.8-fpm-alpine"
+
+# Secret(s) for pulling images from a private container registry. Leave empty if not needed.
+imagePullSecrets: []
+
+# Override the chart name
+nameOverride: ""
+
+# Override the chart's full name
+fullnameOverride: ""
+
+# Service account configuration
+# ref: https://kubernetes.io/docs/concepts/security/service-accounts/
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Automatically mount a service account's API credentials
+  automount: false
+  # Annotations to add to the service account
+  annotations: {}
+  # Name of the service account to use
+  # If not set and create is true, a name will be generated using the fullname template.
+  name: ""
+
+# Additional annotations for the pod. Leave empty if not required.
+podAnnotations: {}
+
+# Additional labels for the pod. Leave empty if not required.
+podLabels: {}
+
+# Security context applied at the pod level
+podSecurityContext: {}
+
+# Security context applied at the container level
+securityContext:
+  runAsNonRoot: false
+  readOnlyRootFilesystem: false
+  allowPrivilegeEscalation: false
+  seccompProfile:
+      type: RuntimeDefault
+
+# PVC is required to persist and share application data across containers in the pod.
+persistence:
+  # If false, data will not be persisted.
+  enabled: true
+  data:
+    # StorageClass for the volume. Leave empty to use the cluster default.
+    storageClass: ""
+    # Storage type (SSD, HDD)
+    storageType: SSD
+    # Requested size
+    storageSize: 10Gi
+    # Volume access mode
+    accessModes:
+        - ReadWriteOnce
+
+# Set to true if you want to load environment variables from a Kubernetes secret.
+# Make sure to remove parameters from values.yaml that are already defined in your secret.
+secret:
+  enabled: false
+  name: espocrm-config
+
+# Configuration for connecting to an external database.
+externalDatabase:
+  # Specify the database name
+  name: espocrm
+  # Specify the database platform (e.g. Mysql, Postgresql)
+  platform: Mysql
+  # Specify the hostname or IP of the database
+  host: ""
+  # Specify the database port
+  port: 3306
+  # Specify the username for database authentication
+  user: espocrm-admin
+  # Specify the password for the database user
+  password: ""
+
+# Set the desired logging level. Leave empty for default (INFO).
+# Options: DEBUG, INFO, NOTICE, WARNING, ERROR
+log:
+  level: 
+
+# Port exposed by the service
+service:
+  type: ClusterIP
+  port: 80
+
+# EspoCRM container configuration
+espocrm:
+  settings:
+    admin_username: admin
+    admin_password: ""
+    # Publicly accessible base URL for the EspoCRM instance. e.g. https://crm.example.com.
+    site_url: ""
+  # Define resource requests and limits for the EspoCRM container. Leave empty to use Kubernetes defaults (no limits).
+  resources: []
+    # requests:
+    #   cpu: 10m
+    #   memory: 100Mi
+    # limits:
+    #   cpu: 200m
+    #   memory: 150Mi
+
+  # Liveness probe for the EspoCRM container
+  # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+  livenessProbe:
+    httpGet:
+      path: /index.php
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+    timeoutSeconds: 5
+    failureThreshold: 10
+  
+  # Readiness probe for the EspoCRM container
+  readinessProbe:
+    httpGet:
+      path: /index.php
+      port: http
+    initialDelaySeconds: 20
+    periodSeconds: 5
+    timeoutSeconds: 5
+    failureThreshold: 10
+
+  # Startup probe for the EspoCRM container
+  startupProbe:
+    httpGet:
+      path: /index.php
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 15
+    timeoutSeconds: 5
+    failureThreshold: 10
+
+  # Configuration for outbound emails and OIDC authentication. Uncomment and fill as needed.
+  config: []
+    # outbound_email_from_name:
+    # outbound_email_from_address:
+    # smtp_server:
+    # smtp_port: 465
+    # smtp_auth: true
+    # smtp_security: SSL
+    # authentication_method: Oidc
+    # oidc_username_claim: preferred_username
+    # oidc_fallback: true
+    # oidc_sync: true
+    # oidc_group_claim: groups
+    # oidc_sync_teams: false
+    # oidc_allow_regular_user_fallback: false
+    # oidc_authorization_endpoint:
+    # oidc_token_endpoint:
+    # oidc_jwks_endpoint:
+    # oidc_logout_url:
+    # oidc_create_user: true
+    # oidc_allow_admin_user: true
+    # oidc_client_secret: ""
+    # oidc_client_id: ""
+
+
+## Nginx container configuration
+nginx:
+  image:
+    # Image repository for nginx
+    repository: nginx
+    # https://hub.docker.com/_/nginx/tags?page=1&name=alpine-slim
+    pullPolicy: Always
+    tag: 1.27.4-alpine-slim
+
+  # Define resource requests and limits for the nginx container. Leave empty to use Kubernetes defaults (no limits).
+  resources: []
+    # requests:
+    #   cpu: 1m
+    #   memory: 10Mi
+    # limits:
+    #   cpu: 1m
+    #   memory: 20Mi
+    
+  service:
+    name: espocrm-service
+    port: 80
+    type: ClusterIP
+
+  # Liveness probe for the nginx container
+  # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+  livenessProbe:
+    httpGet:
+      path: /index.php
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 5
+
+  # Readiness probe for the nginx container
+  readinessProbe:
+    httpGet:
+      path: /index.php
+      port: http
+    initialDelaySeconds: 20
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+  # Startup probe for the nginx container
+  startupProbe:
+    httpGet:
+      path: /index.php
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 5
+
+  # Ingress configuration
+  ingress:
+    enabled: true
+    # Annotations for the ingress
+    # Example:
+      # kubernetes.io/ingress.class: traefik
+      # kubernetes.io/tls-acme: "true"
+      # cert-manager.io/cluster-issuer: letsencrypt-prod
+      # traefik.ingress.kubernetes.io/router.middlewares: traefik-https-redirect@kubernetescrd, traefik-security-header@kubernetescrd
+    annotations: []
+
+
+    # Replace crm.example.com with the host used for EspoCRM.
+    hosts:
+      - host: crm.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+        # Replace "" with the secret used for EspoCRM.
+      - secretName: ""
+        # Replace crm.example.com with the host used for EspoCRM.
+        hosts:
+           - crm.example.com
+
+  # Nginx configuration
+  config: |-
+    user nginx;
+    worker_processes 5;
+    events {
+      worker_connections  1024;
+    }
+
+    http {
+      include       mime.types;
+      default_type  application/octet-stream;
+      sendfile      on;
+      keepalive_timeout  65;
+
+      map $http_upgrade $connection_upgrade {
+        default upgrade;
+        '' close;
+      }
+
+      upstream websocket {
+        server localhost:8080;
+      }
+
+      server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        
+        server_name crm.example.com;
+
+        charset utf-8;
+        index index.html index.php;
+
+        client_max_body_size 50M;
+
+        keepalive_timeout 300;
+        types_hash_max_size 2048;
+
+        server_tokens off;
+        fastcgi_send_timeout 300;
+        fastcgi_read_timeout 300;
+        gzip on;
+        gzip_types text/plain text/css text/javascript application/javascript application/json;
+        gzip_min_length 1000;
+        gzip_comp_level 9;
+
+        root /var/www/html/public;
+
+        location /client {
+          root /var/www/html;
+          autoindex off;
+
+          location ~* ^.+.(js|css|png|jpg|svg|svgz|jpeg|gif|ico|tpl)$ {
+            access_log off;
+            expires max;
+          }
+        }
+
+        location = /favicon.ico { access_log off; log_not_found off; }
+        location = /robots.txt  { access_log off; log_not_found off; }
+
+        location ~ \.php$ {
+          fastcgi_pass localhost:9000;
+          include fastcgi_params;
+          fastcgi_index index.php;
+          fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+          fastcgi_param QUERY_STRING $query_string;
+          fastcgi_param PHP_VALUE "upload_max_filesize=50M \n post_max_size=50M";
+        }
+
+        location /wss {
+          proxy_pass http://websocket;
+          proxy_http_version 1.1;
+          proxy_set_header Upgrade $http_upgrade;
+          proxy_set_header Connection $connection_upgrade;
+          proxy_read_timeout 12h;
+          proxy_set_header User-Agent '';
+        }
+
+        location /api/v1/ {
+          if (!-e $request_filename){
+            rewrite ^/api/v1/(.*)$ /api/v1/index.php last; break;
+          }
+        }
+
+        location /portal/ {
+          try_files $uri $uri/ /portal/index.php?$query_string;
+        }
+
+        location /api/v1/portal-access {
+          if (!-e $request_filename){
+            rewrite ^/api/v1/(.*)$ /api/v1/portal-access/index.php last; break;
+          }
+        }
+
+        location ~ /(\.htaccess|\web.config|\.git) {
+          deny all;
+        }
+      }
+    }
+
+## Daemon container configuration
+daemon:
+  # Command(s) to run when the container starts
+  entryPoint:
+    - docker-daemon.sh
+
+  # Define resource requests and limits for the daemon container. Leave empty to use Kubernetes defaults (no limits).
+  resources: []
+    # requests:
+    #   cpu: 80m
+    #   memory: 40Mi
+    # limits:
+    #   # cpu: 10m
+    #   memory: 400Mi
+
+  # Liveness probe for the daemon container
+  # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+  livenessProbe:
+    tcpSocket:
+      port: 8080
+    initialDelaySeconds: 15
+    periodSeconds: 5
+    timeoutSeconds: 5
+    failureThreshold: 10
+
+  # Readiness probe for the daemon container
+  readinessProbe:
+    tcpSocket:
+      port: 8080
+    initialDelaySeconds: 20
+    periodSeconds: 5
+    timeoutSeconds: 5
+    failureThreshold: 10
+
+  # Startup probe for the daemon container
+  startupProbe:
+    tcpSocket:
+      port: 8080
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 10
+
+## Websocket Container Configuration 
+websocket:
+  port: 7777
+  entryPoint:
+    - docker-websocket.sh
+
+  # Define resource requests and limits for the websocket container. Leave empty to use Kubernetes defaults (no limits).
+  resources: []
+    # requests:
+    #   cpu: 3m
+    #   memory: 30Mi
+    # limits:
+    #   # cpu: 50m
+    #   memory: 50Mi
+
+  # Liveness probe for the websocket container
+  # ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+  livenessProbe:
+    tcpSocket:
+      port: 7777
+    initialDelaySeconds: 15
+    periodSeconds: 5
+    timeoutSeconds: 5
+    failureThreshold: 10
+
+  # Readiness probe for the websocket container
+  readinessProbe:
+    tcpSocket:
+      port: 7777
+    initialDelaySeconds: 20
+    periodSeconds: 5
+    timeoutSeconds: 5
+    failureThreshold: 10
+
+  # Startup probe for the websocket container
+  startupProbe:
+    tcpSocket:
+      port: 7777
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 10
+
+  # Websocket configuration
+  config:
+    # Enable or disable websocket usage
+    use_web_socket: "true"
+    # Subscriber DSN used by ZeroMQ to listen for messages
+    web_socket_zero_m_q_subscriber_dsn: "tcp://*:7777"
+    # Submission DSN used by other components to send messages to the websocket
+    web_socket_zero_m_q_submission_dsn: "tcp://espocrm-websocket:7777"
+    # Public websocket URL used by frontend clients. e.g. "wss://crm.example.com:8081"
+    web_socket_url: ""

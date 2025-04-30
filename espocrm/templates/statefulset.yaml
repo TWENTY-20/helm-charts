@@ -1,0 +1,162 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  serviceName: "{{ .Release.Name }}-service"
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+        - name: {{ .Release.Name }}-data
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-data
+        - name: {{ .Release.Name }}-nginx-config
+          configMap:
+            name: {{ .Release.Name }}-nginx-conf
+
+      containers:
+        # espocrm
+        - name: {{ .Release.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          {{- if .Values.espocrm.startupProbe }}
+          startupProbe:
+            {{- toYaml .Values.espocrm.startupProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.espocrm.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.espocrm.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.espocrm.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.espocrm.readinessProbe | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.espocrm.resources | nindent 12 }}
+          volumeMounts:
+            - name: {{ .Release.Name }}-data
+              mountPath: /var/www/html
+          env:
+            {{- range $key, $val := .Values.espocrm.settings }}
+            - name: ESPOCRM_{{ $key | upper | replace "." "_" }}
+              value: "{{ $val }}"
+            {{- end }}
+            {{- range $key, $val := .Values.espocrm.config }}
+            - name: ESPOCRM_CONFIG_{{ $key | upper | replace "." "_" }}
+              value: "{{ $val }}"
+            {{- end }}
+            {{- range $key, $val := .Values.externalDatabase }}
+            - name: ESPOCRM_DATABASE_{{ $key | upper | replace "." "_" }}
+              value: "{{ $val }}"
+            {{- end }}
+            - name: ESPOCRM_CONFIG_LOGGER_LEVEL
+              value: {{ .Values.log.level }}
+          {{- if and .Values.secret.enabled .Values.secret.name }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.secret.name }}
+          {{- end }}
+
+        # nginx
+        - name: {{ .Release.Name  }}-nginx
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.nginx.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          {{- if .Values.nginx.startupProbe }}
+          startupProbe:
+            {{- toYaml .Values.nginx.startupProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.nginx.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.nginx.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.nginx.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.nginx.readinessProbe | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.nginx.resources | nindent 12 }}
+          volumeMounts:
+            - name: {{ .Release.Name }}-data
+              mountPath: /var/www/html
+            - name: {{ .Release.Name }}-nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+
+        # daemon
+        - name: {{ .Release.Name  }}-daemon
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.daemon.startupProbe }}
+          startupProbe:
+            {{- toYaml .Values.daemon.startupProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.daemon.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.daemon.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.daemon.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.daemon.readinessProbe | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.daemon.resources | nindent 12 }}
+          command: {{ toYaml .Values.daemon.entryPoint | nindent 12 }}
+          volumeMounts:
+            - name: {{ .Release.Name }}-data
+              mountPath: /var/www/html
+
+        # websocket
+        - name: {{ .Release.Name  }}-websocket
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.websocket.startupProbe }}
+          startupProbe:
+            {{- toYaml .Values.websocket.startupProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.websocket.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.websocket.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.websocket.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.websocket.readinessProbe | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.websocket.resources | nindent 12 }}
+          command: {{ toYaml .Values.websocket.entryPoint | nindent 12 }}
+          volumeMounts:
+            - name: {{ .Release.Name }}-data
+              mountPath: /var/www/html
+          env:
+            {{- range $key, $val := .Values.websocket.config }}
+            - name: ESPOCRM_CONFIG_{{ $key | upper | replace "." "_" }}
+              value: "{{ $val }}"
+            {{- end }}
