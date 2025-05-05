@@ -3,7 +3,24 @@ entries:
   espocrm:
   - apiVersion: v2
     appVersion: 9.0.8
-    created: "2025-05-05T10:03:13.662498253+02:00"
+    created: "2025-05-05T19:10:57.18079331+02:00"
+    description: A Helm chart for deploying EspoCRM on Kubernetes
+    digest: dfdc95b1b2be025908bdfd1db8d61da06d0d5390dcce7fd816e6127672c2da30
+    keywords:
+    - espocrm
+    - crm
+    - helm
+    - kubernetes
+    name: espocrm
+    sources:
+    - https://github.com/TWENTY-20/helm-charts/tree/main/espocrm
+    type: application
+    urls:
+    - https://twenty-20.github.io/helm-charts/espocrm-1.0.0.tgz
+    version: 1.0.0
+  - apiVersion: v2
+    appVersion: 9.0.8
+    created: "2025-05-05T19:10:57.179435406+02:00"
     description: A Helm chart for deploying EspoCRM on Kubernetes
     digest: b6d3bbe0169e88c951f25ef0024124fcc6d0e1fa2c9b2179696c8c6cb680ffee
     keywords:
@@ -20,7 +37,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 9.0.8
-    created: "2025-05-05T10:03:13.660761726+02:00"
+    created: "2025-05-05T19:10:57.178029201+02:00"
     description: A Helm chart for deploying EspoCRM on Kubernetes
     digest: 214d2668146bbaf49493971ff8a1c4866074fd5c78469bf5010f0ff42bce1463
     keywords:
@@ -35,4 +52,4 @@ entries:
     urls:
     - https://twenty-20.github.io/helm-charts/espocrm-0.1.0.tgz
     version: 0.1.0
-generated: "2025-05-05T10:03:13.658224814+02:00"
+generated: "2025-05-05T19:10:57.176343296+02:00"
