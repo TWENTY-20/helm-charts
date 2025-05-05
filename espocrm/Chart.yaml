@@ -2,7 +2,7 @@ apiVersion: v2
 name: espocrm
 description: A Helm chart for deploying EspoCRM on Kubernetes
 type: application
-version: 0.1.1
+version: 1.0.0
 appVersion: "9.0.8"
 sources:
   - https://github.com/TWENTY-20/helm-charts/tree/main/espocrm
