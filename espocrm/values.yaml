@@ -5,7 +5,7 @@ image:
   # Image repository for EspoCRM
   repository: espocrm/espocrm
   pullPolicy: Always
-  tag: "9.1.0-fpm-alpine"
+  tag: "9.1.1-fpm-alpine"
 
 # Secret(s) for pulling images from a private container registry. Leave empty if not needed.
 imagePullSecrets: []
@@ -61,13 +61,9 @@ persistence:
     accessModes:
         - ReadWriteOnce
 
-# Set to true if you want to load environment variables from a Kubernetes secret.
-# Make sure to remove parameters from values.yaml that are already defined in your secret.
-secret:
-  enabled: false
-  name: espocrm-config
-
 # Configuration for connecting to an external database.
+# These values can be overridden by a Kubernetes Secret if `secret.enabled` is true.
+# To avoid conflicts, leave any values empty (i.e., "") if they are also defined in the secret.
 externalDatabase:
   # Specify the database name
   name: espocrm
@@ -82,10 +78,16 @@ externalDatabase:
   # Specify the password for the database user
   password: ""
 
+# Set to true if you want to load environment variables from a Kubernetes secret.
+# Values in values.yaml will override Secret entries unless explicitly left empty (i.e., "")
+secret:
+  enabled: false
+  name: espocrm-config
+
 # Set the desired logging level. Leave empty for default (INFO).
 # Options: DEBUG, INFO, NOTICE, WARNING, ERROR
 log:
-  level: 
+  level: INFO
 
 # Port exposed by the service
 service:
@@ -94,6 +96,8 @@ service:
 
 # EspoCRM container configuration
 espocrm:
+  # These values can be overridden by a Kubernetes Secret if `secret.enabled` is true.
+  # To avoid conflicts, leave any values empty (i.e., "") if they are also defined in the secret.
   settings:
     admin_username: admin
     admin_password: ""
@@ -140,6 +144,8 @@ espocrm:
     failureThreshold: 10
 
   # Configuration for outbound emails and OIDC authentication. Uncomment and fill as needed.
+  # These values can be overridden by a Kubernetes Secret if `secret.enabled` is true.
+  # To avoid conflicts, leave any values empty (i.e., "") if they are also defined in the secret.
   config: []
     # outbound_email_from_name:
     # outbound_email_from_address:
@@ -160,8 +166,8 @@ espocrm:
     # oidc_logout_url:
     # oidc_create_user: true
     # oidc_allow_admin_user: true
-    # oidc_client_secret: ""
-    # oidc_client_id: ""
+    # oidc_client_secret:
+    # oidc_client_id:
 
 
 ## Nginx container configuration

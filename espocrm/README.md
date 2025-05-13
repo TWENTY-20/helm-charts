@@ -71,7 +71,7 @@ When using a Secret:
 - The Secret can provide the same environment variables that would otherwise be generated from `values.externalDatabase`, `values.espocrm.settings` and `values.espocrm.config`.
 - The Secret **must** contain the exact environment variable names that EspoCRM expects.
 
-⚠️ **To avoid conflicts, you must remove any parameters from `values.yaml` if they are already defined in your Secret.** 
+⚠️ **Values in `values.yaml` will override Secret entries unless explicitly left empty (i.e.,"")**
 
 For more details on required environment variables, refer to the official EspoCRM documentation:  
 [EspoCRM Installation Environment Variables](https://docs.espocrm.com/administration/docker/installation/#installation-environments)

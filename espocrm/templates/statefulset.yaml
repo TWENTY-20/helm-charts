@@ -56,16 +56,22 @@ spec:
               mountPath: /var/www/html
           env:
             {{- range $key, $val := .Values.espocrm.settings }}
+            {{- if or (not (kindIs "string" $val)) (ne $val "") }}          
             - name: ESPOCRM_{{ $key | upper | replace "." "_" }}
               value: "{{ $val }}"
             {{- end }}
+            {{- end }}
             {{- range $key, $val := .Values.espocrm.config }}
+            {{- if or (not (kindIs "string" $val)) (ne $val "") }}
             - name: ESPOCRM_CONFIG_{{ $key | upper | replace "." "_" }}
               value: "{{ $val }}"
             {{- end }}
+            {{- end }}
             {{- range $key, $val := .Values.externalDatabase }}
+            {{- if or (not (kindIs "string" $val)) (ne $val "") }}
             - name: ESPOCRM_DATABASE_{{ $key | upper | replace "." "_" }}
               value: "{{ $val }}"
+            {{- end }}
             {{- end }}
             - name: ESPOCRM_CONFIG_LOGGER_LEVEL
               value: {{ .Values.log.level }}
