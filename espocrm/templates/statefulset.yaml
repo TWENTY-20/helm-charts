@@ -24,9 +24,9 @@ spec:
         - name: {{ .Release.Name }}-data
           persistentVolumeClaim:
             claimName: {{ .Release.Name }}-data
-        - name: {{ .Release.Name }}-nginx-config
+        - name: {{ .Values.nginx.config.configVolumeName }}
           configMap:
-            name: {{ .Release.Name }}-nginx-conf
+            name: {{ .Values.nginx.config.configMapName }}
 
       containers:
         # espocrm
