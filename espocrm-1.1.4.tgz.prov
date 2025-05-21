@@ -1,0 +1,42 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+apiVersion: v2
+appVersion: 9.1.3
+description: A Helm chart for deploying EspoCRM on Kubernetes
+home: https://www.espocrm.com
+keywords:
+- - espocrm
+- - espo
+- - crm
+- - helm
+- - kubernetes
+maintainers:
+- - email: it-factory@twenty20.de
+  name: twenty20
+  url: https://twenty20.de
+name: espocrm
+sources:
+- - https://github.com/TWENTY-20/helm-charts/tree/main/espocrm
+type: application
+version: 1.1.4
+
+...
+files:
+  espocrm-1.1.4.tgz: sha256:f9806129f2ec29d4e5af8fe52dad5d9b08aa1cb9136710d03ea6d993cee07e91
+-----BEGIN PGP SIGNATURE-----
+
+wsFcBAEBCgAQBQJoLhMiCRAGtNzHgvLFEAAA5ZgQABnvZnpfIQARZABc86+UhLKs
+5WDHjZiiC6Pg8SOKR2YnydfgrCacQ7wAMXtI99iwUjZjOT5XTxI40oEv2GSYCGIi
+0x1jL9ndR+FHbpJ/z0/ylTwGQ5pPv8KXqToio5UeUKQK8KQVbt49kyAbCOXwzu6K
+6ytleGPm+QwOAKtfWCBvH4J6VPuQb/k0djYYHOTtk6PG5NBOvGzfoCweW+j/m+2u
+cxbO9qEeChse+1qxqozEFROTY+Qd9nIafBVk3aKLusXZgvaf6ho1Z2An86vhqAO5
+c9vtLJ6veZj4pp3hbKGaRgvos9ZQG+M7q9CR0eLYOG5zxFEiur5TBNY5JEI92zl6
+cghSq6mRjKTJubuIZJFtVwB0AXYXosXXdRnoIwzlDrVuFIej+ZthYDj2a08fY/cE
+qaasKbutqI7HTm5rTdg4DQ/HbAxW1D8pJ40LBwBZ/i287HldVxhkp00bxcNUQnIo
+ChXYReVWRU/kZdkCxba6NJVZ6Ri7Rfmv67Mr2o4h0re5E0xj/j7q40GJr1+EwO4S
+MC90Ry7+Zl0Jw3T/IaH1r2FPCFkJvIZcqHzbtxwJTQ2C/z70PFHM3sevuJbW95L6
+u5wOjXmptrGmZDJ17445yc7AskfZ+eEGzOd8kDxMUwfs+vpo8vB6ekCP6TDlHqsy
+hdkL9GswEhE8yKT12KI3
+=ATaN
+-----END PGP SIGNATURE-----
