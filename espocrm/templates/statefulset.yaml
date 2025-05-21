@@ -4,7 +4,7 @@ metadata:
   name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
 spec:
-  serviceName: "{{ .Release.Name }}-service"
+  serviceName: {{ .Values.service.name }}
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -30,7 +30,7 @@ spec:
 
       containers:
         # espocrm
-        - name: {{ .Release.Name }}
+        - name: {{ .Values.espocrm.name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
@@ -82,7 +82,7 @@ spec:
           {{- end }}
 
         # nginx
-        - name: {{ .Release.Name  }}-nginx
+        - name: {{ .Values.nginx.name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.nginx.image.repository }}:{{ .Values.nginx.image.tag | default .Chart.AppVersion }}"
@@ -113,7 +113,7 @@ spec:
               subPath: nginx.conf
 
         # daemon
-        - name: {{ .Release.Name  }}-daemon
+        - name: {{ .Values.daemon.name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -138,7 +138,7 @@ spec:
               mountPath: /var/www/html
 
         # websocket
-        - name: {{ .Release.Name  }}-websocket
+        - name: {{ .Values.websocket.name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
