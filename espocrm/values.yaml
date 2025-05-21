@@ -1,6 +1,3 @@
-# Number of desired pod replicas
-replicaCount: 1
-
 image:
   # Image repository for EspoCRM
   repository: espocrm/espocrm
@@ -51,6 +48,7 @@ persistence:
   # If false, data will not be persisted.
   enabled: true
   data:
+    name: espocrm-data
     # StorageClass for the volume. Leave empty to use the cluster default.
     storageClass: ""
     # Storage type (SSD, HDD)

@@ -1,7 +1,7 @@
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: {{ .Release.Name }}-data
+  name: {{ .Values.persistence.data.name }}
   annotations:
     everest.io/disk-volume-type: {{ .Values.persistence.data.storageType }}
 spec:

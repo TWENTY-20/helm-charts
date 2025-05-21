@@ -5,7 +5,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   serviceName: {{ .Values.service.name }}
-  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}
@@ -21,9 +20,9 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       volumes:
-        - name: {{ .Release.Name }}-data
+        - name: {{ .Values.persistence.data.name }}
           persistentVolumeClaim:
-            claimName: {{ .Release.Name }}-data
+            claimName: {{ .Values.persistence.data.name }}
         - name: {{ .Values.nginx.config.configVolumeName }}
           configMap:
             name: {{ .Values.nginx.config.configMapName }}
@@ -52,7 +51,7 @@ spec:
           resources:
             {{- toYaml .Values.espocrm.resources | nindent 12 }}
           volumeMounts:
-            - name: {{ .Release.Name }}-data
+            - name: {{ .Values.persistence.data.name }}
               mountPath: /var/www/html
           env:
             {{- range $key, $val := .Values.espocrm.settings }}
@@ -106,9 +105,9 @@ spec:
           resources:
             {{- toYaml .Values.nginx.resources | nindent 12 }}
           volumeMounts:
-            - name: {{ .Release.Name }}-data
+            - name: {{ .Values.persistence.data.name }}
               mountPath: /var/www/html
-            - name: {{ .Release.Name }}-nginx-config
+            - name: {{ .Values.nginx.config.configVolumeName }}
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
 
@@ -134,7 +133,7 @@ spec:
             {{- toYaml .Values.daemon.resources | nindent 12 }}
           command: {{ toYaml .Values.daemon.entryPoint | nindent 12 }}
           volumeMounts:
-            - name: {{ .Release.Name }}-data
+            - name: {{ .Values.persistence.data.name }}
               mountPath: /var/www/html
 
         # websocket
@@ -159,7 +158,7 @@ spec:
             {{- toYaml .Values.websocket.resources | nindent 12 }}
           command: {{ toYaml .Values.websocket.entryPoint | nindent 12 }}
           volumeMounts:
-            - name: {{ .Release.Name }}-data
+            - name: {{ .Values.persistence.data.name }}
               mountPath: /var/www/html
           env:
             {{- range $key, $val := .Values.websocket.config }}
