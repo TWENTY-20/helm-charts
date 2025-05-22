@@ -3,7 +3,7 @@ entries:
   espocrm:
   - apiVersion: v2
     appVersion: 9.1.3
-    created: "2025-05-21T19:54:05.002240971+02:00"
+    created: "2025-05-22T20:22:00.667352903+02:00"
     description: A Helm chart for deploying EspoCRM on Kubernetes
     digest: f9806129f2ec29d4e5af8fe52dad5d9b08aa1cb9136710d03ea6d993cee07e91
     home: https://www.espocrm.com
@@ -26,7 +26,7 @@ entries:
     version: 1.1.4
   - apiVersion: v2
     appVersion: 9.1.3
-    created: "2025-05-21T19:54:05.001141192+02:00"
+    created: "2025-05-22T20:22:00.666420397+02:00"
     description: A Helm chart for deploying EspoCRM on Kubernetes
     digest: 3ef877abdfab250fe8a99ef788b29c661e382a3e3fbb9aa95497cc370419d987
     home: https://www.espocrm.com
@@ -49,7 +49,7 @@ entries:
     version: 1.1.3
   - apiVersion: v2
     appVersion: 9.1.3
-    created: "2025-05-21T19:54:05.000336283+02:00"
+    created: "2025-05-22T20:22:00.665339031+02:00"
     description: A Helm chart for deploying EspoCRM on Kubernetes
     digest: f120830f349521b6f076b675618921cc4a8dfe3940a120e82ca78e0ce2ca94a4
     home: https://www.espocrm.com
@@ -72,7 +72,7 @@ entries:
     version: 1.1.2
   - apiVersion: v2
     appVersion: 9.1.1
-    created: "2025-05-21T19:54:04.999537911+02:00"
+    created: "2025-05-22T20:22:00.664329591+02:00"
     description: A Helm chart for deploying EspoCRM on Kubernetes
     digest: 012f0419034b3f590e14b3784b6daed1247260b3f33d604681db481fc4e5ac1f
     home: https://www.espocrm.com
@@ -95,7 +95,7 @@ entries:
     version: 1.1.1
   - apiVersion: v2
     appVersion: 9.1.0
-    created: "2025-05-21T19:54:04.99874521+02:00"
+    created: "2025-05-22T20:22:00.662349666+02:00"
     description: A Helm chart for deploying EspoCRM on Kubernetes
     digest: 9a097e270f61ed0c47195f7cb0a83757433d510eec43d82f22977297693b8941
     keywords:
@@ -112,7 +112,7 @@ entries:
     version: 1.1.0
   - apiVersion: v2
     appVersion: 9.0.8
-    created: "2025-05-21T19:54:04.997982097+02:00"
+    created: "2025-05-22T20:22:00.661723888+02:00"
     description: A Helm chart for deploying EspoCRM on Kubernetes
     digest: dfdc95b1b2be025908bdfd1db8d61da06d0d5390dcce7fd816e6127672c2da30
     keywords:
@@ -129,7 +129,7 @@ entries:
     version: 1.0.0
   - apiVersion: v2
     appVersion: 9.0.8
-    created: "2025-05-21T19:54:04.997211851+02:00"
+    created: "2025-05-22T20:22:00.661152437+02:00"
     description: A Helm chart for deploying EspoCRM on Kubernetes
     digest: b6d3bbe0169e88c951f25ef0024124fcc6d0e1fa2c9b2179696c8c6cb680ffee
     keywords:
@@ -146,7 +146,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: 9.0.8
-    created: "2025-05-21T19:54:04.996418401+02:00"
+    created: "2025-05-22T20:22:00.660580202+02:00"
     description: A Helm chart for deploying EspoCRM on Kubernetes
     digest: 214d2668146bbaf49493971ff8a1c4866074fd5c78469bf5010f0ff42bce1463
     keywords:
@@ -161,4 +161,29 @@ entries:
     urls:
     - https://twenty-20.github.io/helm-charts/espocrm-0.1.0.tgz
     version: 0.1.0
-generated: "2025-05-21T19:54:04.995460064+02:00"
+  youtrack:
+  - apiVersion: v2
+    appVersion: 2025.1.74704
+    created: "2025-05-22T20:22:00.668057376+02:00"
+    description: A Helm chart for deploying Youtrack on Kubernetes
+    digest: 09a2676f261b372d2558ed735313df13055e6a8fc3d51c82cf3e6a1169e115b2
+    home: https://twenty20.de
+    keywords:
+    - youtrack
+    - yt
+    - jetbrains
+    - twenty20
+    - k8s
+    - kubernetes
+    maintainers:
+    - email: it-factory@twenty20.de
+      name: twenty20
+      url: https://twenty20.de
+    name: youtrack
+    sources:
+    - https://github.com/TWENTY-20/helm-charts/tree/main/youtrack
+    type: application
+    urls:
+    - https://twenty-20.github.io/helm-charts/youtrack-1.0.0.tgz
+    version: 1.0.0
+generated: "2025-05-22T20:22:00.659917787+02:00"
