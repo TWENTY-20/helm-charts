@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.persistence.conf.name }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    everest.io/disk-volume-type: {{ .Values.persistence.conf.storageType }}
+spec:
+  storageClassName: {{ .Values.persistence.conf.storageClassName }}
+  accessModes: {{ .Values.persistence.conf.accessModes }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.conf.storageSize }}

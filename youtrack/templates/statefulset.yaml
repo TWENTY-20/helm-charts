@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.nameOverride | default .Release.Name }}
+  serviceName: {{ .Values.service.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.nameOverride | default .Release.Name }}
+      annotations:
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      volumes:
+        - name: {{ .Values.persistence.data.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.data.name }}
+        - name: {{ .Values.persistence.conf.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.conf.name }}
+        - name: {{ .Values.persistence.logs.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.logs.name }}
+        - name: {{ .Values.persistence.backups.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.backups.name }}
+        - name: {{ .Values.config.name }}
+          projected:
+            sources:
+              - configMap:
+                  name: {{ .Values.config.name }}
+      {{- with .Values.volumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: init-{{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: {{ .Values.persistence.data.name }}
+              mountPath: /opt/youtrack/data
+            - name: {{ .Values.persistence.conf.name }}
+              mountPath: /opt/youtrack/conf
+            - name: {{ .Values.persistence.logs.name }}
+              mountPath: /opt/youtrack/logs
+            - name: {{ .Values.persistence.backups.name }}
+              mountPath: /opt/youtrack/backups
+          resources:
+            {{- toYaml .Values.initContainerResources | nindent 12 }}
+          args: ["configure", "--base-url={{ .Values.config.baseUrl }}"]
+      containers:
+        - name: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.service.enabled }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+              name: {{ .Values.service.name }}
+              protocol: {{ .Values.service.protocol }}
+          {{- end }}
+          volumeMounts:
+            - name:  {{ .Values.persistence.data.name }}
+              mountPath: /opt/youtrack/data
+            - name:  {{ .Values.persistence.conf.name }}
+              mountPath: /opt/youtrack/conf
+            - name:  {{ .Values.persistence.logs.name }}
+              mountPath: /opt/youtrack/logs
+            - name:  {{ .Values.persistence.backups.name }}
+              mountPath: /opt/youtrack/backups
+            - name: {{ .Values.config.name }}
+              mountPath: /opt/youtrack/conf/youtrack.jvmoptions
+              subPath: youtrack.jvmoptions
+          {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

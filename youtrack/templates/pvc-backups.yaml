@@ -1,0 +1,60 @@
+{{- if eq .Values.persistence.backups.backupType "objectStorage" }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ .Values.persistence.backups.name }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    pv.kubernetes.io/provisioned-by: {{ .Values.persistence.backups.objectStorage.storageProvisioner }}
+    everest.io/reclaim-policy: {{ .Values.persistence.backups.objectStorage.reclaimPolicy }}
+spec:
+  accessModes: {{ .Values.persistence.backups.objectStorage.accessModes }}
+  csi:
+    driver: {{ .Values.persistence.backups.objectStorage.csiDriver }}
+    fsType: {{ .Values.persistence.backups.objectStorage.fsType }}
+    volumeHandle: {{ .Values.persistence.backups.objectStorage.bucketId }}
+    volumeAttributes:
+      storage.kubernetes.io/csiProvisionerIdentity: {{ .Values.persistence.backups.objectStorage.storageProvisioner }}
+      everest.io/obs-volume-type: {{ .Values.persistence.backups.objectStorage.obsVolumeType }}
+      everest.io/region: {{ .Values.persistence.backups.objectStorage.region }}
+    nodePublishSecretRef:
+      name: {{ .Values.persistence.backups.objectStorage.accessKeySecretKeySecretName }}
+      namespace: {{ .Release.Namespace }}
+  persistentVolumeReclaimPolicy: {{ .Values.persistence.backups.objectStorage.persistentVolumeReclaimPolicy }}
+  storageClassName: {{ .Values.persistence.backups.objectStorage.storageClassName }}
+  mountOptions:
+    {{- if .Values.persistence.backups.objectStorage.mountOptions }}
+    {{ .Values.persistence.backups.objectStorage.mountOptions | toYaml | nindent 4 }}
+    {{- end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.persistence.backups.name }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    volume.beta.kubernetes.io/storage-provisioner: {{ .Values.persistence.backups.objectStorage.storageProvisioner }}
+    csi.storage.k8s.io/fstype: {{ .Values.persistence.backups.objectStorage.fsType }}
+    everest.io/obs-volume-type: {{ .Values.persistence.backups.objectStorage.obsVolumeType }}
+    csi.storage.k8s.io/node-publish-secret-namespace: {{ .Release.Namespace }}
+    csi.storage.k8s.io/node-publish-secret-name: {{ .Values.persistence.backups.objectStorage.accessKeySecretKeySecretName }}
+spec:
+  volumeName: {{ .Values.persistence.backups.name }}
+  storageClassName: {{ .Values.persistence.backups.objectStorage.storageClassName }}
+  accessModes: {{ .Values.persistence.backups.objectStorage.accessModes }}
+{{- else if eq .Values.persistence.backups.backupType "volumeStorage" }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.persistence.backups.name }}
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    everest.io/disk-volume-type: {{ .Values.persistence.backups.volumeStorage.storageType }}
+spec:
+  storageClassName: {{ .Values.persistence.backups.volumeStorage.storageClassName }}
+  accessModes: {{ .Values.persistence.backups.volumeStorage.accessModes }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.backups.volumeStorage.storageSize }}
+{{- end }}

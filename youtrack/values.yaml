@@ -1,0 +1,187 @@
+image:
+  repository: jetbrains/youtrack
+  pullPolicy: Always
+  # Using Chart.yaml's AppVersion when no image tag set in values.yaml
+  # tag:
+
+# Secrets for pulling images from a private container registry.
+imagePullSecrets: []
+
+# Security context applied at the pod level
+podSecurityContext:
+  fsGroup: 13001
+
+# Security context for containers
+securityContext:
+  runAsNonRoot: true
+  runAsGroup: 13001
+  runAsUser: 13001
+  privileged: false
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false # <- need to be false otherwise error
+  capabilities:
+    drop:
+    - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+# Official requirements for Youtrack https://www.jetbrains.com/help/youtrack/server/youtrack-supported-environments.html#hardware-requirements
+
+# Define resource requests and limits for the init container
+initContainerResources:
+  requests:
+    cpu: 300m
+    memory: 2000Mi
+  limits:
+#    cpu: 300m
+#    memory: 2000Mi
+
+# Define resource requests and limits for the main container
+resources:
+  requests:
+    cpu: 300m
+    memory: 2000Mi
+  limits:
+#     cpu: 300m
+#     memory: 4Gi
+
+persistence:
+  data:
+    name: data
+    storageClassName: csi-disk-default
+    storageType: SSD
+    storageSize: 10Gi
+    accessModes:
+      - ReadWriteOnce
+
+  logs:
+    name: logs
+    storageClassName: csi-disk-default
+    storageType: SSD
+    storageSize: 1Gi
+    accessModes:
+      - ReadWriteOnce
+
+  conf:
+    name: config
+    storageClassName: csi-disk-default
+    storageType: SSD
+    storageSize: 1Gi
+    accessModes:
+      - ReadWriteOnce
+
+  backups:
+    backupType: volumeStorage # ⚠️ Choose backupType: "objectStorage" or "volumeStorage", only one can be active at a time.
+    name: backup
+
+    objectStorage: # This setting only effective when backupType is set to objectStorage
+      storageClassName: csi-obsfs-retain
+      obsVolumeType: STANDARD
+      fsType: obsfs
+      storageProvisioner: everest-csi-provisioner
+      region: eu-de
+      reclaimPolicy: retain-volume-only
+      persistentVolumeReclaimPolicy: Retain
+      csiDriver: obs.csi.everest.io
+      mountOptions: []
+      accessModes:
+        - ReadWriteMany
+      bucketId: your-bucked-id
+      accesKeySecretKeySecretName: your-secret
+
+    volumeStorage: # This setting only effective when backupType is set to volumeStorage
+      storageClassName: csi-disk-default
+      storageType: SATA
+      storageSize: 50Gi
+      accessModes:
+        - ReadWriteOnce
+
+config:
+  name: configmap
+  baseUrl: "https://youtrack.example.com" # ⚠️ NEED TO BE SET, rest is optional
+
+# General Parameters: https://www.jetbrains.com/help/youtrack/server/youtrack-java-start-parameters.html#general-parameters
+  youtrackAdminRestore: false # default is false
+  youtrackSupportEmail: youtrack-feedback@jetbrains.com # default is youtrack-feedback@jetbrains.com
+  youtrackDisableCheckForUpdate: false
+  dnqTextIndexMinPrefixQueryLength: 3 # default is 3
+  youtrackMailLimit: 0 # default is 0
+  youtrackEventMergeTimeout: 60000 # default is 6000
+  youtrackDefaultPage: /dashboard # default is /dashboard
+  youtrackWebHookBaseUrl: "" # default is empty
+  httpRequestHeaderBufferSize: 102400 # default is 102400
+  httpResponseHeaderBufferSize: 102400 # default is 102400
+  youtrackLicenseName: "" # default is empty
+  youtrackLincenseKey: "" # default is empty, can be added later via WebUI
+  youtrackDumbMode: false # default is false
+  youtrackAiPlatformConfigUrl: "" # default is empty
+
+# Environmental Parameters: https://www.jetbrains.com/help/youtrack/server/youtrack-java-start-parameters.html#environmental-parameters
+  secureMode: disable  # disable (default) or tls
+  statisticsUpload: false # default is false
+
+# Authentication Throttling Parameters: https://www.jetbrains.com/help/youtrack/server/youtrack-java-start-parameters.html#throttling-parameters
+  hubAuthLoginThrottlingEnabled: false # default is false
+
+# JVM Options
+  heapDumpOnOutOfMemoryError: false # default is false
+  heapDumpPath: /dev/null # /dev/null is default
+  errorFile: "" # e.g. %APP_LOGS_DIR%%FILE_SEPARATOR%hs_err_pid%%p.log
+  javaAwtHeadless: false # default is false
+  fileEncoding: "" # e.g. UTF-8
+  enableAssertions: false # default is false
+  disableAssertions: false # default is false
+  youtrackSingleTierApp: false # default is false
+  metaspaceSize: 350m # default is 350m
+  maxMetaspaceSize: 350m # default is 350m
+  xmx: 1024m # default is 1024m
+
+# Extra Parameters
+  debug: false # default is false
+  sdebug: false # default is false
+  clearBrokenBlobs: false # default is false
+  hubAdminSkip: false # default is false
+  forceCheckDataConsistency: false # default is false
+
+# Service definition
+service:
+  enabled: true
+  name: http
+  port: 8080
+  protocol: TCP
+
+# Ingress definition
+ingress:
+  enabled: true
+  name: youtrack-ingress
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    kubernetes.io/tls-acme: "true"
+    # cert-manager.io/cluster-issuer: "letsencrypt-staging"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # Base annotations without IP whitelist middleware
+    traefik.ingress.kubernetes.io/router.middlewares: traefik-https-redirect@kubernetescrd, traefik-security-header@kubernetescrd
+    # Use this line instead if ipWhitelist.enabled is true
+    # traefik.ingress.kubernetes.io/router.middlewares: traefik-https-redirect@kubernetescrd, traefik-security-header@kubernetescrd, ip-whitelist@kubernetescrd
+
+# Use this to restrict access to YouTrack to specific IP addresses
+ipWhitelist:
+  enabled: false
+  name: ip-whitelist # when setting to true add the name to the ingress annotations under router.middlewares section
+  sourceRange:
+    - XXX.XXX.XXX.XXX/XX # specify your allowed IP's ranges here
+
+# Enable or disable whitelisting for Traefik and Cert-Manager components
+networkPolicyWhitelist:
+  traefik:
+    enabled: false
+  cert-manager:
+    enabled: false
+    port: 8089
+
+nameOverride: ""
+fullnameOverride: ""
+podAnnotations: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

@@ -1,0 +1,152 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.config.name }}
+  namespace: {{ .Release.Namespace }}
+data:
+  youtrack.jvmoptions: |
+    {{- if .Values.config.youtrackAdminRestore }}
+    -Djetbrains.youtrack.admin.restore={{ .Values.config.youtrackAdminRestore }}
+    {{- end }}
+
+    {{- if ne .Values.config.youtrackSupportEmail "youtrack-feedback@jetbrains.com" }}
+    -Djetbrains.youtrack.support.email={{ .Values.config.youtrackSupportEmail }}
+    {{- end }}
+
+    {{- if .Values.config.youtrackDisableCheckForUpdate }}
+    -Djetbrains.youtrack.disableCheckForUpdate={{ .Values.config.youtrackDisableCheckForUpdate }}
+    {{- end }}
+
+    {{- if ne (int .Values.config.dnqTextIndexMinPrefixQueryLength) 3 }}
+    -Djetbrains.dnq.textIndex.minPrefixQueryLength={{ .Values.config.dnqTextIndexMinPrefixQueryLength }}
+    {{- end }}
+
+    {{- if ne (int .Values.config.youtrackMailLimit) 0 }}
+    -Djetbrains.youtrack.mailLimit={{ .Values.config.youtrackMailLimit }}
+    {{- end }}
+
+    {{- if ne (int .Values.config.youtrackEventMergeTimeout) 60000 }}
+    -Djetbrains.youtrack.event.merge.timeout={{ .Values.config.youtrackEventMergeTimeout }}
+    {{- end }}
+
+    {{- if ne .Values.config.youtrackDefaultPage "/dashboard" }}
+    -Djetbrains.youtrack.default.page={{ .Values.config.youtrackDefaultPage }}
+    {{- end }}
+
+    {{- if .Values.config.youtrackWebHookBaseUrl }}
+    -Djetbrains.youtrack.webHooksBaseUrl={{ .Values.config.youtrackWebHookBaseUrl }}
+    {{- end }}
+
+    {{- if ne (int .Values.config.httpRequestHeaderBufferSize) 102400 }}
+    -Djetbrains.http.request.header.buffer.size={{ .Values.config.httpRequestHeaderBufferSize }}
+    {{- end }}
+
+    {{- if ne (int .Values.config.httpResponseHeaderBufferSize) 102400 }}
+    -Djetbrains.http.response.header.buffer.size={{ .Values.config.httpResponseHeaderBufferSize }}
+    {{- end }}
+
+    {{- if .Values.config.youtrackLicenseName }}
+    -Djetbrains.youtrack.licenseName={{ .Values.config.youtrackLicenseName }}
+    {{- end }}
+
+    {{- if .Values.config.youtrackLincenseKey }}
+    -Djetbrains.youtrack.licenseKey={{ .Values.config.youtrackLincenseKey }}
+    {{- end }}
+
+    {{- if .Values.config.youtrackDumbMode }}
+    -Djetbrains.youtrack.dumbMode={{ .Values.config.youtrackDumbMode }}
+    {{- end }}
+
+    {{- if .Values.config.youtrackAiPlatformConfigUrl }}
+    -Djetbrains.youtrack.ai.platform.config.url={{ .Values.config.youtrackAiPlatformConfigUrl }}
+    {{- end }}
+
+    {{- $url := .Values.config.baseUrl }}
+    {{- if or (not $url) (eq $url "https://youtrack.example.com") }}
+    {{- fail "⚠️ baseUrl must be set in values.yaml" }}
+    {{- end }}
+
+    {{- if ne $url "https://youtrack.example.com" }}
+    -Dbase-url={{ $url }}
+    {{- end }}
+
+    {{- if eq .Values.config.secureMode "tls" }}
+    -Dsecure-mode={{ .Values.config.secureMode }}
+    {{- end }}
+
+    {{- if and (ne (int .Values.service.port) 8080) (ne (int .Values.service.port) 80) }}
+    -Dlisten-port={{ .Values.service.port }}
+    {{- end }}
+
+    {{- if .Values.config.statisticsUpload }}
+    -Dstatistics-upload={{ .Values.config.statisticsUpload }}
+    {{- end }}
+
+    {{- if .Values.config.hubAuthLoginThrottlingEnabled }}
+    -Djetbrains.hub.auth.login.throttling.enabled={{ .Values.config.hubAuthLoginThrottlingEnabled }}
+    {{- end }}
+
+    {{- if .Values.config.heapDumpOnOutOfMemoryError }}
+    -XX:-HeapDumpOnOutOfMemoryError
+    {{- end }}
+
+    {{- if and .Values.config.heapDumpOnOutOfMemoryError (ne .Values.config.heapDumpPath "/dev/null") }}
+    -XX:HeapDumpPath={{ .Values.config.heapDumpPath }}
+    {{- end }}
+
+    {{- if .Values.config.errorFile }}
+    -XX:ErrorFile={{ .Values.config.errorFile }}
+    {{- end }}
+
+    {{- if .Values.config.fileEncoding }}
+    -Dfile.encoding={{ .Values.config.fileEncoding }}
+    {{- end }}
+
+    {{- if .Values.config.javaAwtHeadless }}
+    -Djava.awt.headless={{ .Values.config.javaAwtHeadless }}
+    {{- end }}
+
+    {{- if .Values.config.enableAssertions }}
+    -ea
+    {{- end }}
+
+    {{- if .Values.config.disableAssertions }}
+    -da
+    {{- end }}
+
+    {{- if ne .Values.config.metaspaceSize "350m" }}
+    -XX:MetaspaceSize={{ .Values.config.metaspaceSize }}
+    {{- end }}
+
+    {{- if ne .Values.config.maxMetaspaceSize "350m" }}
+    -XX:MaxMetaspaceSize={{ .Values.config.maxMetaspaceSize }}
+    {{- end }}
+
+    {{- if ne .Values.config.xmx "1024m" }}
+    -Xmx={{ .Values.config.xmx }}
+    {{- end }}
+
+    {{- if .Values.config.youtrackSingleTierApp }}
+    -Djetbrains.youtrack.singleTierApp={{ .Values.config.youtrackSingleTierApp }}
+    {{- end }}
+
+    # Extra Parameters
+    {{- if .Values.config.debug }}
+    -debug
+    {{- end }}
+
+    {{- if .Values.config.sdebug }}
+    -sdebug
+    {{- end }}
+
+    {{- if .Values.config.hubAdminSkip }}
+    -Djetbrains.hub.admin.skip={{ .Values.config.hubAdminSkip }}
+    {{- end }}
+
+    {{- if .Values.config.forceCheckDataConsistency }}
+    -Dexodus.log.forceCheckDataConsistency={{ .Values.config.forceCheckDataConsistency }}
+    {{- end }}
+
+    {{- if .Values.config.clearBrokenBlobs }}
+    -Dexodus.entityStore.refactoring.clearBrokenBlobs={{ .Values.config.clearBrokenBlobs }}
+    {{- end }}
