@@ -1,0 +1,43 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+apiVersion: v2
+appVersion: 2025.1.74704
+description: A Helm chart for deploying Youtrack on Kubernetes
+home: https://twenty20.de
+keywords:
+- - youtrack
+- - yt
+- - jetbrains
+- - twenty20
+- - k8s
+- - kubernetes
+maintainers:
+- - email: it-factory@twenty20.de
+  name: twenty20
+  url: https://twenty20.de
+name: youtrack
+sources:
+- - https://github.com/TWENTY-20/helm-charts/tree/main/youtrack
+type: application
+version: 1.0.1
+
+...
+files:
+  youtrack-1.0.1.tgz: sha256:eabfe1fa29e290b1f6c2d5345782dc22d83290e045323283cc709e9a842d16d8
+-----BEGIN PGP SIGNATURE-----
+
+wsFcBAEBCgAQBQJoPyGjCRAGtNzHgvLFEAAAXg8QAKLsys6rD8O7oWWUYk2XEsK4
+W+Nwxha4kIyK2x4cIhWOB5pKkixIsldNcw6H2b2Kz7x95hII4qk04EwcJYU3lOg7
+r1fDhLEUVDUrnsV7csT1XH1D8VrCbUcnWdJ/G1pxVlq5wfTgxGVB7vAp7et5PNMg
+q298LVsgER9vhzKl6AkmT5nNZXdsHnD7sZa7n6/tzgG9mFo6D5ShjlVDSrUGOkG0
+mNfutM/HkI8AO77tHleUtdDrMOmn1BJjDkBJogUPNvaGprnl8jxzv1kti9tmElv9
+dJMjY9pz5uYEyJxKKTmAyZGkS6n/1GdNyXoDlBCGOYDcywrclVm7KTRwklgvZecB
+IoBQW10vJ2grPgVNgs+2ci8rAnlPpyFTZtXj2y2Bw5M9XPRtqO1SxTH7MWUdilcS
+4YYHIQk3f8yxYmtrHBNL/olbxIvCAJ6z/1ARWab3tWn7dL/g0gu0FerE3BoF6Yle
+YUl1GC0FKqnZ+JYN/g4VysXBSzJZQy6hoi0pIRvxamustsx9B21TrJ7/LEXIP4hb
+x4UOpBvDw9bi4YpOlnxXhKSsI1rJ+ONaJbMy8+J9s5s8sniAZ8BZoFs5Yo1vIXk8
+hk6EYCOIbyihz7Yn2qSaZmlXV+8+iJvrdLI/4EWIT9tAG8+fIwn26ZllaRWWq01e
+xHwdVOX7XHXxNIIKnZx4
+=O1XY
+-----END PGP SIGNATURE-----
