@@ -4,7 +4,7 @@ image:
   # Using Chart.yaml's AppVersion when no image tag set in values.yaml
   # tag:
 
-# Secrets for pulling images from a private container registry.
+# Secrets for pulling images from a private container registry
 imagePullSecrets: []
 
 # Security context applied at the pod level
@@ -45,12 +45,13 @@ resources:
 #     cpu: 300m
 #     memory: 4Gi
 
+# Configure your volumes
 persistence:
   data:
     name: data
     storageClassName: csi-disk-default
     storageType: SSD
-    storageSize: 10Gi
+    storageSize: 50Gi
     accessModes:
       - ReadWriteOnce
 
@@ -58,7 +59,7 @@ persistence:
     name: logs
     storageClassName: csi-disk-default
     storageType: SSD
-    storageSize: 1Gi
+    storageSize: 5Gi
     accessModes:
       - ReadWriteOnce
 
@@ -70,6 +71,7 @@ persistence:
     accessModes:
       - ReadWriteOnce
 
+# Configure how backups will be saved
   backups:
     backupType: volumeStorage # ⚠️ Choose backupType: "objectStorage" or "volumeStorage", only one can be active at a time.
     name: backup
@@ -96,6 +98,7 @@ persistence:
       accessModes:
         - ReadWriteOnce
 
+# Configure your Youtrack
 config:
   name: configmap
   baseUrl: "https://youtrack.example.com" # ⚠️ NEED TO BE SET, rest is optional
@@ -159,10 +162,8 @@ ingress:
     kubernetes.io/tls-acme: "true"
     # cert-manager.io/cluster-issuer: "letsencrypt-staging"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    # Base annotations without IP whitelist middleware
-    traefik.ingress.kubernetes.io/router.middlewares: traefik-https-redirect@kubernetescrd, traefik-security-header@kubernetescrd
-    # Use this line instead if ipWhitelist.enabled is true
-    # traefik.ingress.kubernetes.io/router.middlewares: traefik-https-redirect@kubernetescrd, traefik-security-header@kubernetescrd, ip-whitelist@kubernetescrd
+    # active the annotation below if ipWhitelist.enabled is set to true
+    # traefik.ingress.kubernetes.io/router.middlewares: ip-whitelist@kubernetescrd
 
 # Use this to restrict access to YouTrack to specific IP addresses
 ipWhitelist:
@@ -179,6 +180,7 @@ networkPolicyWhitelist:
     enabled: false
     port: 8089
 
+# Optional: Override names and configure pod scheduling preferences
 nameOverride: ""
 fullnameOverride: ""
 podAnnotations: {}
