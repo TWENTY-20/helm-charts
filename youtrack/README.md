@@ -114,13 +114,13 @@ If ipWhitelist.enabled is true, update your ingress annotations to include the w
 
 ## 📦 Installation
 ```bash
-helm repo add twenty20 https://twenty-20.github.io/helm-charts
+helm repo add twenty20-helm-charts https://twenty-20.github.io/helm-charts
 ```
 ```bash
 helm repo update
 ```
 ```bash
-helm install youtrack twenty20/youtrack -f values.yaml
+helm install youtrack twenty20-helm-charts/youtrack -f values.yaml
 ```
 ---
 
