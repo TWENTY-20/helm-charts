@@ -1,8 +1,7 @@
 image:
   repository: jetbrains/youtrack
   pullPolicy: Always
-  # Using Chart.yaml's AppVersion when no image tag set in values.yaml
-  # tag:
+  tag: 2025.1.76253
 
 # Secrets for pulling images from a private container registry
 imagePullSecrets: []
@@ -90,6 +89,7 @@ persistence:
         - ReadWriteMany
       bucketId: your-bucked-id
       accesKeySecretKeySecretName: your-secret
+      size: 100Gi
 
     volumeStorage: # This setting only effective when backupType is set to volumeStorage
       storageClassName: csi-disk-default

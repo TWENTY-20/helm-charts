@@ -9,6 +9,8 @@ metadata:
     everest.io/reclaim-policy: {{ .Values.persistence.backups.objectStorage.reclaimPolicy }}
 spec:
   accessModes: {{ .Values.persistence.backups.objectStorage.accessModes }}
+  capacity:
+    storage: {{ .Values.persistence.backups.objectStorage.size }}
   csi:
     driver: {{ .Values.persistence.backups.objectStorage.csiDriver }}
     fsType: {{ .Values.persistence.backups.objectStorage.fsType }}
@@ -42,6 +44,10 @@ spec:
   volumeName: {{ .Values.persistence.backups.name }}
   storageClassName: {{ .Values.persistence.backups.objectStorage.storageClassName }}
   accessModes: {{ .Values.persistence.backups.objectStorage.accessModes }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.backups.objectStorage.size }}
+
 {{- else if eq .Values.persistence.backups.backupType "volumeStorage" }}
 ---
 apiVersion: v1
