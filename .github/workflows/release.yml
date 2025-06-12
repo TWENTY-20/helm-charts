@@ -39,9 +39,9 @@ jobs:
       uses: helm/chart-releaser-action@v1.7.0
       with:
         config: cr.yaml
-        skip-existing: true    # Skip package upload if release/tag already exists.
+        skip_existing: true    # Skip package upload if release/tag already exists.
         pages_branch: gh-pages
-        charts-dir: .
+        charts_dir: .
       env:
         CR_KEY: it-factory@twenty20.eu
         CR_SIGN: true
