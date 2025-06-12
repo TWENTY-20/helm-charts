@@ -1,0 +1,48 @@
+name: Release Charts
+on:
+  push:
+    branches:
+    - main
+  workflow_dispatch:
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Install Helm
+      uses: azure/setup-helm@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configure Git
+      run: |
+        git config user.name 'github-actions[bot]'
+        git config user.email 'github-actions[bot]@users.noreply.github.com'
+
+    - name: Import GPG key
+      run: |
+        mkdir -p .gpg
+        echo "${{ secrets.GPG_PRIVATE_KEY }}" | base64 -d > .gpg/secring.gpg
+        echo "${{ secrets.GPG_PASSPHRASE }}" > .gpg/passphrase.txt
+        echo "CR_KEYRING=.gpg/secring.gpg" >> $GITHUB_ENV
+        echo "CR_PASSPHRASE_FILE=.gpg/passphrase.txt" >> $GITHUB_ENV
+
+    - name: Release charts
+      uses: helm/chart-releaser-action@v1.7.0
+      with:
+        config: cr.yaml
+        skip-existing: true    # Skip package upload if release/tag already exists.
+        pages_branch: gh-pages
+        charts-dir: .
+      env:
+        CR_KEY: it-factory@twenty20.eu
+        CR_SIGN: true
+        CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}

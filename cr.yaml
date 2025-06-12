@@ -1,0 +1,5 @@
+# Chart Releaser
+owner: TWENTY-20
+git-repo: helm-charts
+sign: true
+key: it-factory@twenty20.eu
