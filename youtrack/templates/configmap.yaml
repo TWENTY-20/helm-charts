@@ -123,7 +123,7 @@ data:
     {{- end }}
 
     {{- if ne .Values.config.xmx "1024m" }}
-    -Xmx={{ .Values.config.xmx }}
+    -Xmx{{ .Values.config.xmx }}
     {{- end }}
 
     {{- if .Values.config.youtrackSingleTierApp }}
