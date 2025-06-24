@@ -2,8 +2,6 @@
 This Helm chart deploys [JetBrains YouTrack](https://www.jetbrains.com/youtrack)
 
 [![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=%23c3bc0e&color=grey)](https://github.com/TWENTY-20/helm-charts)
-[![Helm Chart Version](https://img.shields.io/badge/helm%20chart%20version-1.0.0-green?style=for-the-badge&logoColor=%23c3bc0e&color=%23c3bc0e)](https://artifacthub.io/packages/helm/twenty20-helm-charts/youtrack)
-[![Docker Image Size](https://img.shields.io/docker/image-size/jetbrains/youtrack?style=for-the-badge&logo=docker&logoColor=%23c3bc0e&color=%23c3bc0e)](https://hub.docker.com/r/jetbrains/youtrack)
 
 ## 📝 Description
 This flexible and dynamic Helm chart deploys YouTrack on a Kubernetes cluster using the official Docker image.
