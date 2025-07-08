@@ -180,6 +180,28 @@ nginx:
     pullPolicy: Always
     tag: 1.29.0-alpine-slim
 
+# Traefik configuration (alternative to nginx ingress)
+traefik:
+  enabled: false
+  # IngressRoute configuration
+  ingressRoute:
+    name: espocrm-ingressroute
+    # Replace crm.example.com with your actual domain
+    host: crm.example.com
+    # TLS configuration
+    tls:
+      enabled: true
+      # Certificate resolver name (configured in Traefik)
+      certResolver: letsencrypt-prod
+      # Or use existing secret
+      # secretName: existing-tls-secret
+    # Additional middlewares to apply
+    middlewares: []
+      # - name: traefik-https-redirect
+      #   namespace: traefik
+      # - name: traefik-security-headers
+      #   namespace: traefik
+
   # Define resource requests and limits for the nginx container. Leave empty to use Kubernetes defaults (no limits).
   resources: []
     # requests:
