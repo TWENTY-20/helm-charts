@@ -19,8 +19,6 @@ jobs:
 
     - name: Install Helm
       uses: azure/setup-helm@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Configure Git
       run: |
@@ -45,4 +43,3 @@ jobs:
       env:
         CR_KEY: it-factory@twenty20.eu
         CR_SIGN: true
-        CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
