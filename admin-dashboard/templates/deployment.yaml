@@ -50,8 +50,6 @@ spec:
           volumeMounts:
             - name: configmap
               mountPath: /usr/share/nginx/html
-            - name: tmp
-              mountPath: /tmp
       volumes:
         - name: configmap
           configMap:
