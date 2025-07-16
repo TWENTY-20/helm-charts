@@ -1,0 +1,237 @@
+replicaCount: 2
+
+updateStrategy:
+  type: RollingUpdate
+  maxUnavailable: 1
+  maxSurge: 1
+
+image:
+  repository: nginxinc/nginx-unprivileged
+  tag: 1.28.0-alpine-slim
+  pullPolicy: Always
+
+resources:
+  requests:
+    memory: 5Mi
+    cpu: 1m
+  limits:
+    memory: 5Mi
+    # cpu: 1m
+
+podSecurityContext:
+  fsGroup: 101
+
+containerSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 101
+  runAsGroup: 101
+  readOnlyRootFilesystem: true
+  privileged: false
+  allowPrivilegeEscalation: false
+  seccompProfile:
+    type: RuntimeDefault
+  capabilities:
+    drop:
+      - ALL
+
+service:
+  name: http
+  port: 8080
+  type: ClusterIP
+  protocol: TCP
+health:
+  port: 8080
+
+networkPolicyWhitelist:
+  traefik:
+    enabled: false
+
+# Optional: Override names and configure pod scheduling preferences
+nameOverride: ""
+fullnameOverride: ""
+podAnnotations: {}
+nodeSelector: {}
+tolerations: []
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchLabels:
+              app: admin-dashboard
+          topologyKey: kubernetes.io/hostname
+
+# BEGIN CUSTOM HTML SECTION
+# This is the HTML content block for the admin-dashboard.
+# Please customize the stage buttons, current stage, and external links below
+# to match your environment.
+
+html: |-
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+  <meta charset="UTF-8">
+  <title>Admin-Dashboard</title>
+  <link rel="icon" type="image/x-icon" href="https://twenty20.de/logo_inverse.svg"> <!-- Change to your Logo -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+  body {
+  font-family: system-ui;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 25px;
+  background-color: #191919;
+  color: white;
+  font-size: 20px;
+  }
+  
+  .logo {
+  margin: 50px 0px 150px 0px;
+  max-width: 500px;
+  }
+  
+  .button {
+  width: fit-content;
+  background-color: #c3bc0e;
+  border: none;
+  color: #191919;
+  padding: 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 5px 3px;
+  border-radius: 10px;
+  font-weight: bold;
+  }
+  
+  .button:hover {
+  box-shadow: 1px 1px 13px 4px rgba(195, 188, 14, 1);
+  color: white;
+  }
+  
+  .stage-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin: 60px 0;
+  flex-wrap: wrap;
+  padding: 10px 0;
+  }
+  
+  .line,
+  .small-line {
+  height: 2px;
+  background-color: #ffffff;
+  align-self: center;
+  }
+  
+  .line {
+  flex: 1;
+  min-width: 50px;
+  }
+  
+  .small-line {
+  width: 15px;
+  }
+  
+  .stage-button {
+  width: fit-content;
+  background-color: #c3bc0e;
+  border: none;
+  color: #191919;
+  padding: 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 5px 3px;
+  border-radius: 10px;
+  font-weight: bold;
+  }
+  
+  .stage-button:hover {
+  box-shadow: 1px 1px 13px 4px rgba(195, 188, 14, 1);
+  color: white;
+  }
+  
+  .current-stage {
+  border: 2px solid #ffffff;
+  border-radius: 10px;
+  padding: 15px 15px;
+  font-size: 24px;
+  font-weight: bold;
+  color: #c3bc0e;
+  background-color: #191919;
+  white-space: nowrap;
+  }
+  
+  .external-links {
+  margin-top: 50px;
+  }
+  
+  .external-links .button {
+  width: fit-content;
+  background-color: #c3bc0e;
+  border: none;
+  color: #191919;
+  padding: 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 5px 3px;
+  border-radius: 10px;
+  font-weight: bold;
+  }
+  
+  .external-links .button:hover {
+  box-shadow: 1px 1px 13px 4px rgba(195, 188, 14, 1);
+  color: white;
+  }
+  </style>
+  
+  <script>
+  document.addEventListener('contextmenu', function (e) {
+  e.preventDefault();
+  });
+  
+  document.addEventListener('selectstart', function (e) {
+  e.preventDefault();
+  });
+  </script>
+  </head>
+  
+  <body>
+  <center>
+  <p class="logo">
+  <img src="https://twenty20.de/logo_inverse.svg" width="100%" height="auto" /> <!-- Change to your Logo -->
+  </p>
+  <a class="button" target="_blank" href="1-internal-tool">1 Example Internal Tool</a>
+  <a class="button" target="_blank" href="2-internal-tool">2 Example Internal Tool</a>
+  <a class="button" target="_blank" href="3-internal-tool">3 Example Internal Tool</a>
+  
+  <!-- STAGE LINE WITH SWITCH -->
+  <div class="stage-line">
+  <div class="line"></div>
+  <a class="stage-button" href="https://twenty20.de">Another Stage</a>
+  <div class="small-line"></div>
+  <div class="current-stage">Choosed Stage</div>
+  <div class="small-line"></div>
+  <a class="stage-button" href="https://twenty20.de">Another Stage</a>
+  <div class="line"></div>
+  </div>
+  
+  <!-- EXTERNAL TOOLS -->
+  <div class="external-links">
+  <a class="button" href="https://twenty20.de" target="_blank">1 Example External Tool</a>
+  <a class="button" href="https://twenty20.de" target="_blank">2 Example External Tool</a>
+  <a class="button" href="https://twenty20.de" target="_blank">3 Example External Tool</a>
+  </div>
+  </center>
+  </body>
+  </html>

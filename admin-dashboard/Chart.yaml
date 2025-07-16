@@ -1,0 +1,23 @@
+apiVersion: v2
+name: admin-dashboard
+description: A Helm chart for deploying admin-dashboard on Kubernetes
+type: application
+version: 1.0.1
+
+keywords:
+  - admin
+  - dashboard
+  - admin-dashboard
+  - twenty20
+  - k8s
+  - kubernetes
+
+maintainers:
+  - name: twenty20
+    url: https://twenty20.de
+    email: it-factory@twenty20.de
+
+home: https://twenty20.de
+
+sources:
+  - https://github.com/TWENTY-20/helm-charts/tree/main/admin-dashboard

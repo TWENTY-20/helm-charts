@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Values.nameOverride | default .Release.Name }}
+  replicas: {{default 1 .Values.replicaCount }}
+  strategy:
+    type: {{ .Values.updateStrategy.type }}
+    rollingUpdate:
+      maxUnavailable: {{ .Values.updateStrategy.maxUnavailable }}
+      maxSurge: {{ .Values.updateStrategy.maxSurge }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.nameOverride | default .Release.Name }}
+      annotations:
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      affinity:
+        podAntiAffinity: {{ .Values.podAntiAffinity }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 14 }}
+      containers:
+        - name: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ default "IfNotPresent" .Values.image.pullPolicy }}
+          resources:
+            {{- toYaml .Values.resources | nindent 20 }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 20 }}
+          ports:
+            - name: {{ .Values.service.name }}
+              containerPort: {{ .Values.service.port }}
+          livenessProbe:
+            httpGet:
+              path:  "/"
+              port: {{ .Values.service.port }}
+            initialDelaySeconds: 60
+            periodSeconds: 60
+          readinessProbe:
+            httpGet:
+              path:  "/"
+              port: {{ .Values.service.port }}
+          volumeMounts:
+            - name: configmap
+              mountPath: /usr/share/nginx/html
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: configmap
+          configMap:
+              name: configmap

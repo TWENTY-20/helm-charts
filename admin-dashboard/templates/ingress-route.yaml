@@ -1,0 +1,20 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`dw.ops.tw20.de`) && PathPrefix(`/`)
+      middlewares:
+        - name: oauth2
+          namespace: traefik
+        - name: https-redirect
+          namespace: traefik
+        - name: security-header
+          namespace: traefik
+      services:
+        - name: {{ .Values.service.name }}
+          port: {{ .Values.service.port }}
