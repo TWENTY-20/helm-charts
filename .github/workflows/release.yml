@@ -43,3 +43,4 @@ jobs:
       env:
         CR_KEY: it-factory@twenty20.eu
         CR_SIGN: true
+        CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
