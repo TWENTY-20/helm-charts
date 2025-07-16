@@ -1,0 +1,36 @@
+{{- if .Values.traefik.enabled }}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Values.traefik.ingressRoute.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  entryPoints:
+    - web
+    {{- if .Values.traefik.ingressRoute.tls.enabled }}
+    - websecure
+    {{- end }}
+  routes:
+    - match: Host(`{{ .Values.traefik.ingressRoute.host }}`)
+      kind: Rule
+      {{- if .Values.traefik.middlewares }}
+      middlewares:
+        {{- range .Values.traefik.middlewares }}
+        - name: {{ .name }}
+          {{- if .namespace }}
+          namespace: {{ .namespace }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+      services:
+        - name: {{ .Values.service.name }}
+          port: {{ .Values.service.port }}
+  {{- if .Values.traefik.ingressRoute.tls.enabled }}
+  tls:
+    {{- if .Values.traefik.ingressRoute.tls.certResolver }}
+    certResolver: {{ .Values.traefik.ingressRoute.tls.certResolver }}
+    {{- else if .Values.traefik.ingressRoute.tls.secretName }}
+    secretName: {{ .Values.traefik.ingressRoute.tls.secretName }}
+    {{- end }}
+  {{- end }}
+{{- end }}

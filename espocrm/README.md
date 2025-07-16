@@ -30,11 +30,17 @@ Please refer to the `values.yaml` file for a complete reference of all available
 
 ### Ingress
 
-- This Helm chart deploys EspoCRM together with an Nginx container that acts as a reverse proxy.
-- You need to manually adjust the Ingress settings in `values.nginx.ingress` and `values.nginx.config` to match your cluster's setup:
+This Helm chart deploys EspoCRM together with an Nginx container that acts as a reverse proxy. The chart supports both traditional Kubernetes Ingress (via Nginx Ingress Controller) and Traefik IngressRoute.
+
+#### Option 1: Kubernetes Ingress (Default)
+
+You need to manually adjust the Ingress settings in `values.nginx.ingress` and `values.nginx.config` to match your cluster's setup:
 
 e.g.:
  ```yaml
+nginx:
+  ingress:
+    enabled: true
     hosts:
       - host: crm.example.com 
         paths:
@@ -47,14 +53,69 @@ e.g.:
  ```
 
  ```nginx
-    server {
-      listen 80 default_server;
-      listen [::]:80 default_server;
-      
-      server_name crm.example.com;
-    }
+nginx:
+  config:
+    content: |-
+      # ...existing configuration...
+      server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        
+        server_name crm.example.com;
+        # ...rest of nginx config...
+      }
  ```
 
+#### Option 2: Traefik IngressRoute
+
+To use Traefik instead of traditional Kubernetes Ingress:
+
+1. **Enable Traefik and disable Nginx Ingress:**
+```yaml
+nginx:
+  ingress:
+    enabled: false
+
+traefik:
+  enabled: true
+  ingressRoute:
+    host: crm.example.com
+    tls:
+      enabled: true
+      certResolver: letsencrypt-prod
+```
+2. **Using existing TLS secret:**
+```yaml
+traefik:
+  enabled: true
+  ingressRoute:
+    host: crm.example.com
+    tls:
+      enabled: true
+      secretName: my-existing-tls-secret
+```
+3. **With additional external middlewares:**
+```yaml
+traefik:
+  enabled: true
+  ingressRoute:
+    host: crm.example.com
+    middlewares:
+      - name: auth-middleware
+        namespace: traefik-system
+      - name: rate-limit
+        namespace: traefik-system
+```
+
+**Traefik Features Included:**
+- Automatic HTTPS redirect
+- Security headers (HSTS, X-Frame-Options, CSP, etc.)
+- Gzip compression
+- WebSocket support (`/wss` endpoint)
+- TLS with cert-manager or existing secrets
+- Custom middleware support
+
+**Note:** The Nginx container still runs as a reverse proxy for the PHP-FPM container. Only the ingress mechanism changes when using Traefik.
 
 ### Secrets
 You can set environment variables directly in your values.yaml file or, preferably, via a Kubernetes Secret.
