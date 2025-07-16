@@ -25,7 +25,7 @@ containerSecurityContext:
   runAsNonRoot: true
   runAsUser: 101
   runAsGroup: 101
-  readOnlyRootFilesystem: true
+  readOnlyRootFilesystem: false
   privileged: false
   allowPrivilegeEscalation: false
   seccompProfile:

@@ -10,9 +10,7 @@ It offers customization via the `values.yaml`, allowing you to modify the HTML c
 - Runs the official nginx-unprivileged [Docker image](https://hub.docker.com/r/nginxinc/nginx-unprivileged)
 - No persistent storage needed
 - Traefik compatible
-- Cert-Manager compatible
-- Easy whitelisting of Traefik & Cert-Manager for NetworkPolicy deny-all setups
-- IP-based access restriction support
+- Easy whitelisting of Traefik deny-all setups
 - Possibility to set securityContext and resource limits
 - Highly customizable via `values.yaml`
 - HTML Code in `values.yaml` to customise the Admin-Dashboard links and design 
@@ -25,6 +23,13 @@ It offers customization via the `values.yaml`, allowing you to modify the HTML c
 ## ⚙️ Configuration
 Please refer to the values.yaml file for a complete reference of all available configuration parameters.
 
+#### <span style="color:red">Ingress Host</span>
+When enabling Ingress in your cluster, make sure to set your hostname via `values.yaml`
+```yaml
+ingress:
+  enabled: true
+  host: "set-your-hostname"
+```
 #### <span style="color:yellow">NetworkPolicy deny-all</span>
 When using deny-all NetworkPolicy in your cluster & using Traefik you can simply whitelist Traefik via `values.yaml`
 
@@ -33,27 +38,6 @@ networkPolicyWhitelist:
   traefik:
     enabled: true
 ```
-When using deny-all NetworkPolicy in your cluster & using Cert-Manager you can simply whitelist Cert-Manager via `values.yaml`
-```yaml
-networkPolicyWhitelist:
-  cert-manager:
-    enabled: true
-    port: 8089
-```
-#### <span style="color:yellow">IP Whitelist</span>
-Enable IP whitelisting to restrict access to specified IP ranges via `values.yaml`
-```yaml
-ipWhitelist:
-    enabled: true
-    name: ip-whitelist
-    sourceRange:
-        - XXX.XXX.XXX.XXX/XX
-```
-**Important:**
-If ipWhitelist.enabled is true, update your ingress annotations to include the whitelist middleware:
-```traefik.ingress.kubernetes.io/router.middlewares: ip-whitelist@kubernetescrd```
-
-
 ---
 
 ## 📦 Installation
