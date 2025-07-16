@@ -42,6 +42,22 @@ service:
 health:
   port: 8080
 
+
+ingress:
+  enabled: true
+  name: admin-dashboard-ingress
+  host: "set-your-hostname"
+  pathPrefix: /
+  entryPoints:
+    - websecure
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  middlewares: []
+  #  - name: example-middleware-name
+    #  namespace: example-middleware-namespace
+
 networkPolicyWhitelist:
   traefik:
     enabled: false

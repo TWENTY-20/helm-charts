@@ -1,20 +1,26 @@
+{{- if .Values.ingress.enabled }}
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ .Values.ingress.name | default .Release.Name }}
+  annotations:
+{{- with .Values.ingress.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   entryPoints:
-    - websecure
+{{ toYaml .Values.ingress.entryPoints | indent 4 }}
   routes:
     - kind: Rule
-      match: Host(`dw.ops.tw20.de`) && PathPrefix(`/`)
+      match: Host(`{{ .Values.ingress.host }}`) && PathPrefix(`{{ .Values.ingress.pathPrefix }}`)
+{{- if .Values.ingress.middlewares }}
       middlewares:
-        - name: oauth2
-          namespace: traefik
-        - name: https-redirect
-          namespace: traefik
-        - name: security-header
-          namespace: traefik
+{{- range .Values.ingress.middlewares }}
+        - name: {{ .name }}
+          namespace: {{ .namespace }}
+{{- end }}
+{{- end }}
       services:
         - name: {{ .Values.service.name }}
           port: {{ .Values.service.port }}
+{{- end }}
