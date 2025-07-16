@@ -94,7 +94,7 @@ kubectl create secret generic espocrm-config \
 
 3. Deploy the chart:
 ```bash
-helm install espocrm ./espocrm-chart -f values.yaml
+helm install espocrm twenty20-helm-charts/espocrm-chart -f values.yaml
 ```
 
 ## License
