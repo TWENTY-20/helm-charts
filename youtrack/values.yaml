@@ -1,7 +1,7 @@
 image:
   repository: jetbrains/youtrack
   pullPolicy: Always
-  tag: 2025.2.86069
+  tag: 2025.2.87963
 
 # Secrets for pulling images from a private container registry
 imagePullSecrets: []
@@ -47,7 +47,7 @@ resources:
 # Configure your volumes
 persistence:
   data:
-    name: data
+    name: youtrack-data
     storageClassName: csi-disk-default
     storageType: SSD
     storageSize: 50Gi
@@ -55,7 +55,7 @@ persistence:
       - ReadWriteOnce
 
   logs:
-    name: logs
+    name: youtrack-logs
     storageClassName: csi-disk-default
     storageType: SSD
     storageSize: 5Gi
@@ -63,7 +63,7 @@ persistence:
       - ReadWriteOnce
 
   conf:
-    name: config
+    name: youtrack-config
     storageClassName: csi-disk-default
     storageType: SSD
     storageSize: 1Gi
@@ -73,7 +73,7 @@ persistence:
 # Configure how backups will be saved
   backups:
     backupType: volumeStorage # ⚠️ Choose backupType: "objectStorage" or "volumeStorage", only one can be active at a time.
-    name: backup
+    name: youtrack-backup
 
     objectStorage: # This setting only effective when backupType is set to objectStorage
       storageClassName: csi-obsfs-retain
