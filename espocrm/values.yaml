@@ -2,7 +2,7 @@ image:
   # Image repository for EspoCRM
   repository: espocrm/espocrm
   pullPolicy: Always
-  tag: "9.1.7-fpm-alpine"
+  tag: "9.1.8-fpm-alpine"
 
 # Secret(s) for pulling images from a private container registry. Leave empty if not needed.
 imagePullSecrets: []
@@ -221,18 +221,17 @@ nginx:
     timeoutSeconds: 3
     failureThreshold: 5
 
-  # Ingress configuration
+  # Ingress configuration ((for standard Kubernetes Ingress, e.g. traefik, nginx))
+  # Note: Do NOT enable this together with `.Values.nginx.traefik`
   ingress:
-    name: espocrm-ingress
     enabled: true
+    name: espocrm-ingress
     # Annotations for the ingress
-    # Example:
-      # kubernetes.io/ingress.class: traefik
-      # kubernetes.io/tls-acme: "true"
-      # cert-manager.io/cluster-issuer: letsencrypt-prod
-      # traefik.ingress.kubernetes.io/router.middlewares: traefik-https-redirect@kubernetescrd, traefik-security-header@kubernetescrd
     annotations: []
-
+      # Example:
+      # kubernetes.io/ingress.class: traefik
+      # cert-manager.io/cluster-issuer: letsencrypt-prod
+      # traefik.ingress.kubernetes.io/router.middlewares: traefik-https-redirect@kubernetescrd,traefik-security-header@kubernetescrd
 
     # Replace crm.example.com with the host used for EspoCRM.
     hosts:
@@ -247,7 +246,31 @@ nginx:
         hosts:
            - crm.example.com
 
-  # Nginx configuration
+  # Traefik configuration
+  # Enable this block to use a Traefik-specific IngressRoute.
+  # Note: Do NOT enable this together with `.Values.nginx.ingress`
+  traefik:
+    enabled: false
+    # IngressRoute configuration
+    ingressRoute:
+      name: espocrm-ingressroute
+      # Replace crm.example.com with your actual domain
+      host: crm.example.com
+      # TLS configuration
+      tls:
+        enabled: true
+        # Certificate resolver name (configured in Traefik)
+        certResolver: letsencrypt-prod
+        # Or use existing secret
+        # secretName: existing-tls-secret
+      # Additional middlewares to apply
+      middlewares: []
+        # - name: traefik-https-redirect
+        #   namespace: traefik
+        # - name: traefik-security-headers
+        #   namespace: traefik
+
+  # Configuration
   config:
     # Name for configMap volume
     configVolumeName: espocrm-nginx-config

@@ -1,0 +1,40 @@
+{{- if and .Values.nginx.traefik.enabled .Values.nginx.ingress.enabled }}
+{{- fail "You cannot enable both nginx.traefik and nginx.ingress. Please choose only one." }}
+{{- end }}
+{{- if and .Values.nginx.traefik.enabled (not .Values.nginx.ingress.enabled) }}
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Values.nginx.traefik.ingressRoute.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  entryPoints:
+    - web
+    {{- if .Values.nginx.traefik.ingressRoute.tls.enabled }}
+    - websecure
+    {{- end }}
+  routes:
+    - match: Host(`{{ .Values.nginx.traefik.ingressRoute.host }}`)
+      kind: Rule
+      {{- if .Values.nginx.traefik.middlewares }}
+      middlewares:
+        {{- range .Values.nginx.traefik.middlewares }}
+        - name: {{ .name }}
+          {{- if .namespace }}
+          namespace: {{ .namespace }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+      services:
+        - name: {{ .Values.service.name }}
+          port: {{ .Values.service.port }}
+  {{- if .Values.nginx.traefik.ingressRoute.tls.enabled }}
+  tls:
+    {{- if .Values.nginx.traefik.ingressRoute.tls.certResolver }}
+    certResolver: {{ .Values.nginx.traefik.ingressRoute.tls.certResolver }}
+    {{- else if .Values.nginx.traefik.ingressRoute.tls.secretName }}
+    secretName: {{ .Values.nginx.traefik.ingressRoute.tls.secretName }}
+    {{- end }}
+  {{- end }}
+{{- end }}
