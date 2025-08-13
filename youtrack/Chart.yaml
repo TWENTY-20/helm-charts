@@ -2,7 +2,7 @@ apiVersion: v2
 name: youtrack
 description: A Helm chart for deploying Youtrack on Kubernetes
 type: application
-version: 1.0.7
+version: 1.0.8
 
 keywords:
   - youtrack
