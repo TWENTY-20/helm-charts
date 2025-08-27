@@ -2,7 +2,8 @@ apiVersion: v2
 name: admin-dashboard
 description: A Helm chart for deploying admin-dashboard on Kubernetes
 type: application
-version: 1.0.5
+icon: https://raw.githubusercontent.com/TWENTY-20/helm-charts/main/admin-dashboard/icon.png
+version: 1.0.6
 
 keywords:
   - admin
