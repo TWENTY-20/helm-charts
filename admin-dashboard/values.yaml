@@ -7,7 +7,7 @@ updateStrategy:
 
 image:
   repository: nginxinc/nginx-unprivileged
-  tag: 1.29.1-alpine-slim
+  tag: 1.29.2-alpine-slim
   pullPolicy: Always
 
 resources:
