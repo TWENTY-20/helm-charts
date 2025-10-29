@@ -178,7 +178,7 @@ nginx:
     repository: nginx
     # https://hub.docker.com/_/nginx/tags?page=1&name=alpine-slim
     pullPolicy: Always
-    tag: 1.29.2-alpine-slim
+    tag: 1.29.3-alpine-slim
 
   # Define resource requests and limits for the nginx container. Leave empty to use Kubernetes defaults (no limits).
   resources: []
