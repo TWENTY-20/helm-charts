@@ -9,7 +9,6 @@ metadata:
     {{ $key }}: {{ $value | quote }}
     {{- end }}
 spec:
-  ingressClassName: nginx
   rules:
     - host: {{ .Values.config.baseUrl | trimPrefix "https://" | trimPrefix "http://" }}
       http:
