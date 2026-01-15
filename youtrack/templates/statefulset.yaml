@@ -59,15 +59,21 @@ spec:
               mountPath: /opt/youtrack/logs
             - name: {{ .Values.persistence.backups.name }}
               mountPath: /opt/youtrack/backups
+            {{- if eq .Values.config.mountStrategy "copy" }}
             - name: {{ .Values.config.name }}
               mountPath: /tmp/youtrack-config
+            {{- end }}
           resources:
             {{- toYaml .Values.initContainerResources | nindent 12 }}
+          {{- if eq .Values.config.mountStrategy "copy" }}
           command: ["/bin/sh", "-c"]
           args:
             - |
               cp /tmp/youtrack-config/youtrack.jvmoptions /opt/youtrack/conf/youtrack.jvmoptions
               /opt/youtrack/bin/youtrack.sh configure --base-url={{ .Values.config.baseUrl }}
+          {{- else }}
+          args: ["configure", "--base-url={{ .Values.config.baseUrl }}"]
+          {{- end }}
       containers:
         - name: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}
           securityContext:
@@ -89,6 +95,11 @@ spec:
               mountPath: /opt/youtrack/logs
             - name:  {{ .Values.persistence.backups.name }}
               mountPath: /opt/youtrack/backups
+            {{- if eq .Values.config.mountStrategy "subPath" }}
+            - name: {{ .Values.config.name }}
+              mountPath: /opt/youtrack/conf/youtrack.jvmoptions
+              subPath: youtrack.jvmoptions
+            {{- end }}
           {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}

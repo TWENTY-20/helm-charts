@@ -103,6 +103,11 @@ config:
   name: configmap
   baseUrl: "https://youtrack.example.com" # ⚠️ NEED TO BE SET, rest is optional
 
+  # ConfigMap mount strategy for youtrack.jvmoptions file
+  # - "copy": Mount ConfigMap to /tmp and copy file to /opt/youtrack/conf (default, more portable)
+  # - "subPath": Mount ConfigMap directly using subPath (may cause issues with some CSI drivers like NFS-CSI)
+  mountStrategy: subPath
+
 # General Parameters: https://www.jetbrains.com/help/youtrack/server/youtrack-java-start-parameters.html#general-parameters
   youtrackAdminRestore: false # default is false
   youtrackSupportEmail: youtrack-feedback@jetbrains.com # default is youtrack-feedback@jetbrains.com
@@ -158,10 +163,13 @@ ingress:
   enabled: true
   name: youtrack-ingress
   annotations:
-    kubernetes.io/ingress.class: traefik
+    kubernetes.io/ingress.class: nginx
     kubernetes.io/tls-acme: "true"
     # cert-manager.io/cluster-issuer: "letsencrypt-staging"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     # active the annotation below if ipWhitelist.enabled is set to true
     # traefik.ingress.kubernetes.io/router.middlewares: ip-whitelist@kubernetescrd
 
