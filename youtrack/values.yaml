@@ -11,8 +11,8 @@ podSecurityContext:
   fsGroup: 13001
 
 # Security context for containers
-securityContextEnabled: true
 securityContext:
+  enabled: true
   runAsNonRoot: true
   runAsGroup: 13001
   runAsUser: 13001
