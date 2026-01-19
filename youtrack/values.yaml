@@ -52,7 +52,7 @@ persistence:
     storageClassName: csi-disk-default
     storageType: SSD
     storageSize: 50Gi
-    persistenceAfterDeletion: false
+    annotations: {}
     accessModes:
       - ReadWriteOnce
 
@@ -61,7 +61,7 @@ persistence:
     storageClassName: csi-disk-default
     storageType: SSD
     storageSize: 5Gi
-    persistenceAfterDeletion: false
+    annotations: {}
     accessModes:
       - ReadWriteOnce
 
@@ -70,7 +70,7 @@ persistence:
     storageClassName: csi-disk-default
     storageType: SSD
     storageSize: 1Gi
-    persistenceAfterDeletion: false
+    annotations: {}
     accessModes:
       - ReadWriteOnce
 
@@ -89,6 +89,7 @@ persistence:
       persistentVolumeReclaimPolicy: Retain
       csiDriver: obs.csi.everest.io
       mountOptions: []
+      annotations: {}
       accessModes:
         - ReadWriteMany
       bucketId: your-bucked-id
@@ -99,7 +100,7 @@ persistence:
       storageClassName: csi-disk-default
       storageType: SATA
       storageSize: 50Gi
-      persistenceAfterDeletion: false
+      annotations: {}
       accessModes:
         - ReadWriteOnce
 
