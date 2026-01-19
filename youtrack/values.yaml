@@ -160,7 +160,7 @@ service:
 
 # Ingress definition
 ingress:
-  enabled: false
+  enabled: true
   name: youtrack-ingress
   annotations:
     kubernetes.io/ingress.class: traefik
@@ -171,7 +171,7 @@ ingress:
     # traefik.ingress.kubernetes.io/router.middlewares: ip-whitelist@kubernetescrd
 
 route:
-  enabled: true
+  enabled: false
   annotations: {}
   tls:
     enabled: true
