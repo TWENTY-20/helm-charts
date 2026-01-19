@@ -5,6 +5,9 @@ metadata:
   namespace: {{ .Release.Namespace }}
   annotations:
     everest.io/disk-volume-type: {{ .Values.persistence.logs.storageType }}
+    {{- if .Values.persistence.logs.keep }}
+    helm.sh/resource-policy: "keep"
+    {{- end }}
 spec:
   storageClassName: {{ .Values.persistence.logs.storageClassName }}
   accessModes: {{ .Values.persistence.logs.accessModes }}
