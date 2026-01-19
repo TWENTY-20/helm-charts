@@ -171,6 +171,7 @@ ingress:
     # active the annotation below if ipWhitelist.enabled is set to true
     # traefik.ingress.kubernetes.io/router.middlewares: ip-whitelist@kubernetescrd
 
+# Route definition when using openshift cluster
 route:
   enabled: false
   annotations: {}
