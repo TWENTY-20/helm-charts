@@ -588,6 +588,30 @@ entries:
     version: 0.1.0
   youtrack:
   - apiVersion: v2
+    created: "2026-01-21T16:26:41.608413815Z"
+    description: A Helm chart for deploying Youtrack on Kubernetes
+    digest: 004babc8848b8528c67c739c112fd703b87e507b54ba0afd4f546afbd325e2c4
+    home: https://twenty20.de
+    icon: https://raw.githubusercontent.com/TWENTY-20/helm-charts/main/youtrack/icon.png
+    keywords:
+    - youtrack
+    - yt
+    - jetbrains
+    - twenty20
+    - k8s
+    - kubernetes
+    maintainers:
+    - email: it-factory@twenty20.de
+      name: twenty20
+      url: https://twenty20.de
+    name: youtrack
+    sources:
+    - https://github.com/TWENTY-20/helm-charts/tree/main/youtrack
+    type: application
+    urls:
+    - https://github.com/TWENTY-20/helm-charts/releases/download/youtrack-1.0.21/youtrack-1.0.21.tgz
+    version: 1.0.21
+  - apiVersion: v2
     created: "2026-01-07T17:16:41.569760839Z"
     description: A Helm chart for deploying Youtrack on Kubernetes
     digest: 11766295f307fb32f976ccf9eed3eba72e68279e0ec8dc10bd90d67f251a9a4b
@@ -1084,4 +1108,4 @@ entries:
     urls:
     - https://twenty-20.github.io/helm-charts/youtrack-1.0.0.tgz
     version: 1.0.0
-generated: "2026-01-07T17:16:41.569960986Z"
+generated: "2026-01-21T16:26:41.608644965Z"
