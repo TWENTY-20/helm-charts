@@ -3,7 +3,7 @@ name: admin-dashboard
 description: A Helm chart for deploying admin-dashboard on Kubernetes
 type: application
 icon: https://raw.githubusercontent.com/TWENTY-20/helm-charts/main/admin-dashboard/icon.png
-version: 1.0.8
+version: 1.0.9
 
 keywords:
   - admin
