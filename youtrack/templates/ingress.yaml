@@ -8,7 +8,13 @@ metadata:
     {{- range $key, $value := .Values.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
+    {{- if and .Values.ingress.openshift.enabled }}
+    route.openshift.io/termination: {{ .Values.ingress.openshift.termination }}
+    {{- end }}
 spec:
+  {{- if and .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
   rules:
     - host: {{ .Values.config.baseUrl | trimPrefix "https://" | trimPrefix "http://" }}
       http:
@@ -20,8 +26,10 @@ spec:
                 name: {{ .Values.service.name }}
                 port:
                   number: {{ .Values.service.port }}
+  {{- if .Values.ingress.sslRedirect }}
   tls:
     - secretName: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}-letsencrypt-cert
       hosts:
         - {{ .Values.config.baseUrl | trimPrefix "https://" | trimPrefix "http://" }}
+  {{- end}}
 {{- end }}

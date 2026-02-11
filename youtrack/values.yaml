@@ -163,6 +163,11 @@ service:
 ingress:
   enabled: true
   name: youtrack-ingress
+  sslRedirect: true
+  # className: openshift-default
+  openshift: 
+    enabled: false
+    termination: edge
   annotations:
     kubernetes.io/ingress.class: traefik
     kubernetes.io/tls-acme: "true"
@@ -170,15 +175,6 @@ ingress:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
     # active the annotation below if ipWhitelist.enabled is set to true
     # traefik.ingress.kubernetes.io/router.middlewares: ip-whitelist@kubernetescrd
-
-# Route definition when using openshift cluster
-route:
-  enabled: false
-  annotations: {}
-  tls:
-    enabled: true
-    termination: edge
-    insecurePolicy: Redirect
 
 # Use this to restrict access to YouTrack to specific IP addresses
 ipWhitelist:
