@@ -2,7 +2,7 @@ image:
   # Image repository for EspoCRM
   repository: espocrm/espocrm
   pullPolicy: Always
-  tag: "9.2.7-fpm-alpine"
+  tag: "9.3.0-fpm-alpine"
 
 # Secret(s) for pulling images from a private container registry. Leave empty if not needed.
 imagePullSecrets: []
