@@ -57,8 +57,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
   annotations:
     everest.io/disk-volume-type: {{ .Values.persistence.backups.volumeStorage.storageType }}
-    {{- range $key, $value := .Values.persistence.backups.volumeStorage.annotations }}
-    {{ $key }}: {{ $value | quote }}
+    {{- with .Values.persistence.backups.volumeStorage.annotations }}
+      {{- toYaml . | nindent 4 }}
     {{- end }}
 spec:
   storageClassName: {{ .Values.persistence.backups.volumeStorage.storageClassName }}
