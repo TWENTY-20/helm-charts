@@ -30,8 +30,8 @@ spec:
                   number: {{ .Values.service.port }}
   {{- if .Values.ingress.tls }}
   tls:
-    - secretName: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}-letsencrypt-cert
+    - secretName: {{ .Values.ingress.tls.secretName }}
       hosts:
-        - {{ .Values.config.baseUrl | trimPrefix "https://" | trimPrefix "http://" }}
+        - {{ .Values.ingress.hostname | quote }}
   {{- end}}
 {{- end }}
