@@ -174,8 +174,8 @@ ingress:
   hostname: youtrack.example.com
   path: /
   pathType: Prefix
-  tls:
-    secretName: youtrack-letsencrypt-cert
+  tls: []
+    # secretName: youtrack-letsencrypt-cert
 
 # Use this to restrict access to YouTrack to specific IP addresses
 ipWhitelist:
