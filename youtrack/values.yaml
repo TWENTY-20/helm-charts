@@ -71,7 +71,7 @@ persistence:
       - ReadWriteOnce
 
   temp:
-    enabled: true # default false, helpful when Upgrade/SetUp from Backup which is bigger then 20Gi
+    enabled: false # default false, helpful when Upgrade/SetUp from Backup which is bigger then 20Gi
     name: youtrack-temp
     storageClassName: csi-disk-default
     storageType: SSD
