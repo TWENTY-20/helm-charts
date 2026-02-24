@@ -70,6 +70,15 @@ persistence:
     accessModes:
       - ReadWriteOnce
 
+  temp:
+    enabled: false # default false, helpful when Upgrade/SetUp from Backup which is bigger then 20Gi
+    name: youtrack-temp
+    storageClassName: csi-disk-default
+    storageType: SSD
+    storageSize: 100Gi
+    accessModes:
+      - ReadWriteOnce
+
 # Configure how backups will be saved
   backups:
     backupType: volumeStorage # ⚠️ Choose backupType: "objectStorage" or "volumeStorage", only one can be active at a time.

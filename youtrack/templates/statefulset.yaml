@@ -30,6 +30,9 @@ spec:
         - name: {{ .Values.persistence.backups.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.backups.name }}
+        - name: {{ .Values.persistence.temp.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.temp.name }}
         - name: {{ .Values.config.name }}
           projected:
             sources:
@@ -83,11 +86,13 @@ spec:
               mountPath: /opt/youtrack/logs
             - name:  {{ .Values.persistence.backups.name }}
               mountPath: /opt/youtrack/backups
+            - name: {{ .Values.persistence.temp.name }}
+              mountPath: /opt/youtrack/temp
             - name: {{ .Values.config.name }}
               mountPath: /opt/youtrack/conf/youtrack.jvmoptions
               subPath: youtrack.jvmoptions
           {{- with .Values.volumeMounts }}
-            {{- toYaml . | nindent 12 }}
+          {{- toYaml . | nindent 12 }}
           {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
