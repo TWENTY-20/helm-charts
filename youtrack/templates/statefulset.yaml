@@ -30,9 +30,11 @@ spec:
         - name: {{ .Values.persistence.backups.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.backups.name }}
+        {{- if .Values.persistence.temp.enabled }}
         - name: {{ .Values.persistence.temp.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.temp.name }}
+        {{- end }}
         - name: {{ .Values.config.name }}
           projected:
             sources:
@@ -78,22 +80,24 @@ spec:
               protocol: {{ .Values.service.protocol }}
           {{- end }}
           volumeMounts:
-            - name:  {{ .Values.persistence.data.name }}
+            - name: {{ .Values.persistence.data.name }}
               mountPath: /opt/youtrack/data
-            - name:  {{ .Values.persistence.conf.name }}
+            - name: {{ .Values.persistence.conf.name }}
               mountPath: /opt/youtrack/conf
-            - name:  {{ .Values.persistence.logs.name }}
+            - name: {{ .Values.persistence.logs.name }}
               mountPath: /opt/youtrack/logs
-            - name:  {{ .Values.persistence.backups.name }}
+            - name: {{ .Values.persistence.backups.name }}
               mountPath: /opt/youtrack/backups
+            {{- if .Values.persistence.temp.enabled }}
             - name: {{ .Values.persistence.temp.name }}
               mountPath: /opt/youtrack/temp
+            {{- end }}
             - name: {{ .Values.config.name }}
               mountPath: /opt/youtrack/conf/youtrack.jvmoptions
               subPath: youtrack.jvmoptions
-          {{- with .Values.volumeMounts }}
-          {{- toYaml . | nindent 12 }}
-          {{- end }}
+            {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 2 }}
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
