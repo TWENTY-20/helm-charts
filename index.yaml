@@ -214,6 +214,30 @@ entries:
     version: 1.0.1
   espocrm:
   - apiVersion: v2
+    appVersion: 9.3.1
+    created: "2026-02-25T15:54:02.067316148Z"
+    description: A Helm chart for deploying EspoCRM on Kubernetes
+    digest: ff53885bc547a930319bd222f0a990081ce55b242471fbf8c90669b8ea060900
+    home: https://www.espocrm.com
+    icon: https://raw.githubusercontent.com/TWENTY-20/helm-charts/main/espocrm/icon.png
+    keywords:
+    - espocrm
+    - espo
+    - crm
+    - helm
+    - kubernetes
+    maintainers:
+    - email: it-factory@twenty20.de
+      name: twenty20
+      url: https://twenty20.de
+    name: espocrm
+    sources:
+    - https://github.com/TWENTY-20/helm-charts/tree/main/espocrm
+    type: application
+    urls:
+    - https://github.com/TWENTY-20/helm-charts/releases/download/espocrm-1.2.10/espocrm-1.2.10.tgz
+    version: 1.2.10
+  - apiVersion: v2
     appVersion: 9.3.0
     created: "2026-02-11T16:53:11.659059237Z"
     description: A Helm chart for deploying EspoCRM on Kubernetes
@@ -1348,4 +1372,4 @@ entries:
     urls:
     - https://twenty-20.github.io/helm-charts/youtrack-1.0.0.tgz
     version: 1.0.0
-generated: "2026-02-24T15:22:03.551100323Z"
+generated: "2026-02-25T15:54:02.067542752Z"
