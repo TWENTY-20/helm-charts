@@ -5,6 +5,9 @@ metadata:
   namespace: {{ .Release.Namespace }}
   annotations:
     everest.io/disk-volume-type: {{ .Values.persistence.data.storageType }}
+    {{- with .Values.persistence.data.annotations }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   storageClassName: {{ .Values.persistence.data.storageClassName }}
   accessModes: {{ .Values.persistence.data.accessModes }}

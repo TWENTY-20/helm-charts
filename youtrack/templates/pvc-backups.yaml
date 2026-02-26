@@ -57,6 +57,9 @@ metadata:
   namespace: {{ .Release.Namespace }}
   annotations:
     everest.io/disk-volume-type: {{ .Values.persistence.backups.volumeStorage.storageType }}
+    {{- with .Values.persistence.backups.volumeStorage.annotations }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
 spec:
   storageClassName: {{ .Values.persistence.backups.volumeStorage.storageClassName }}
   accessModes: {{ .Values.persistence.backups.volumeStorage.accessModes }}
