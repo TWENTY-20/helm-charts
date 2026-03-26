@@ -164,15 +164,25 @@ service:
 
 # Ingress definition
 ingress:
-  enabled: true
+  enabled: false
   name: youtrack-ingress
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    kubernetes.io/tls-acme: "true"
+  ingressClassName: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: traefik
+    # kubernetes.io/tls-acme: "true"
     # cert-manager.io/cluster-issuer: "letsencrypt-staging"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
     # active the annotation below if ipWhitelist.enabled is set to true
     # traefik.ingress.kubernetes.io/router.middlewares: ip-whitelist@kubernetescrd
+  hosts: []
+  # - host: chart-example.local
+  #   paths:
+  #     - path: /
+  #       pathType: ImplementationSpecific
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
 
 # Use this to restrict access to YouTrack to specific IP addresses
 ipWhitelist:
