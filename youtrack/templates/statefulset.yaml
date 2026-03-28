@@ -17,6 +17,9 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      {{- if .Values.serviceAccountName }}
+      serviceAccountName: {{ .Values.serviceAccountName }}
+      {{- end}}
       volumes:
         - name: {{ .Values.persistence.data.name }}
           persistentVolumeClaim:
@@ -53,8 +56,10 @@ spec:
         - name: init-{{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- if .Values.securityContext.enabled }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- end}}
           volumeMounts:
             - name: {{ .Values.persistence.data.name }}
               mountPath: /opt/youtrack/data
@@ -69,8 +74,10 @@ spec:
           args: ["configure", "--base-url={{ .Values.config.baseUrl }}"]
       containers:
         - name: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}
+          {{- if .Values.securityContext.enabled }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- end}}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if .Values.service.enabled }}

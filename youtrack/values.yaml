@@ -12,6 +12,7 @@ podSecurityContext:
 
 # Security context for containers
 securityContext:
+  enabled: true
   runAsNonRoot: true
   runAsGroup: 13001
   runAsUser: 13001
@@ -51,6 +52,7 @@ persistence:
     storageClassName: csi-disk-default
     storageType: SSD
     storageSize: 50Gi
+    annotations: {}
     accessModes:
       - ReadWriteOnce
 
@@ -59,6 +61,7 @@ persistence:
     storageClassName: csi-disk-default
     storageType: SSD
     storageSize: 5Gi
+    annotations: {}
     accessModes:
       - ReadWriteOnce
 
@@ -67,6 +70,7 @@ persistence:
     storageClassName: csi-disk-default
     storageType: SSD
     storageSize: 1Gi
+    annotations: {}
     accessModes:
       - ReadWriteOnce
 
@@ -94,6 +98,7 @@ persistence:
       persistentVolumeReclaimPolicy: Retain
       csiDriver: obs.csi.everest.io
       mountOptions: []
+      annotations: {}
       accessModes:
         - ReadWriteMany
       bucketId: your-bucked-id
@@ -104,6 +109,7 @@ persistence:
       storageClassName: csi-disk-default
       storageType: SATA
       storageSize: 50Gi
+      annotations: {}
       accessModes:
         - ReadWriteOnce
 
@@ -166,13 +172,19 @@ service:
 ingress:
   enabled: true
   name: youtrack-ingress
-  annotations:
-    kubernetes.io/ingress.class: traefik
-    kubernetes.io/tls-acme: "true"
+  ingressClassName: traefik
+  annotations: {}
+    # kubernetes.io/ingress.class: traefik
+    # kubernetes.io/tls-acme: "true"
     # cert-manager.io/cluster-issuer: "letsencrypt-staging"
-    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    # cert-manager.io/cluster-issuer: "letsencrypt-prod"
     # active the annotation below if ipWhitelist.enabled is set to true
     # traefik.ingress.kubernetes.io/router.middlewares: ip-whitelist@kubernetescrd
+  hostname: youtrack.example.com
+  path: /
+  pathType: Prefix
+  tls: []
+    # secretName: youtrack-letsencrypt-cert
 
 # Use this to restrict access to YouTrack to specific IP addresses
 ipWhitelist:
