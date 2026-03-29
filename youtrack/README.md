@@ -13,7 +13,7 @@ An `initContainer` configures the `baseUrl` before startup, ensuring proper serv
 ## ⚠️ Breaking Changes (2.0.0)
 If you are upgrading from `1.x`, migration steps are required.
 
-Please follow the migration guide: [MIGRATION-1.x-to-2.0.0.md](./MIGRATION-1.x-to-2.0.0.md)
+Please follow the migration guide: [MIGRATION-1.x-to-2.0.0.md](https://github.com/TWENTY-20/helm-charts/blob/main/youtrack/MIGRATION-1.x-to-2.0.0.md)
 
 ---
 ## ✨ Features
