@@ -10,11 +10,16 @@ It supports extensive customization through `values.yaml`, allowing you to tailo
 
 An `initContainer` configures the `baseUrl` before startup, ensuring proper service behavior behind reverse proxies.
 
+## ⚠️ Breaking Changes (2.0.0)
+If you are upgrading from `1.x`, migration steps are required.
+
+Please follow the migration guide: [MIGRATION-1.x-to-2.0.0.md](./MIGRATION-1.x-to-2.0.0.md)
+
 ---
 ## ✨ Features
 - Runs the official YouTrack [Docker image](https://hub.docker.com/r/jetbrains/youtrack)
 - Supports persistent storage for data, logs and configuration
-- Supports backup via volumeStorage or objectStorage (at this moment tested only with [OpenTelekomCloud OBS](https://docs.otc.t-systems.com/object-storage-service))
+- Supports backup via volumeStorage or objectStorage (tested with T-Cloud Public and Azure)
 - Traefik compatible
 - Cert-Manager compatible
 - Easy whitelisting of Traefik & Cert-Manager for NetworkPolicy deny-all setups
@@ -51,7 +56,7 @@ persistence:
     backupType: volumeStorage
     name: youtrack-backup
 ```
-- **objectStorage:** backups on cloud object storage (at this moment tested only with [OpenTelekomCloud OBS](https://docs.otc.t-systems.com/object-storage-service))
+- **objectStorage:** backups on cloud object storage (tested with T-Cloud Public and Azure)
 ```yaml
 persistence:
   backups:

@@ -40,9 +40,6 @@ spec:
             sources:
               - configMap:
                   name: {{ .Values.config.name }}
-      {{- with .Values.volumes }}
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -95,9 +92,6 @@ spec:
             - name: {{ .Values.config.name }}
               mountPath: /opt/youtrack/conf/youtrack.jvmoptions
               subPath: youtrack.jvmoptions
-            {{- with .Values.volumeMounts }}
-            {{- toYaml . | nindent 2 }}
-            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

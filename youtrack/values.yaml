@@ -24,7 +24,7 @@ securityContext:
   seccompProfile:
     type: RuntimeDefault
 
-# Official requirements for Youtrack https://www.jetbrains.com/help/youtrack/server/youtrack-supported-environments.html#hardware-requirements
+# Official requirements for YouTrack https://www.jetbrains.com/help/youtrack/server/youtrack-supported-environments.html#hardware-requirements
 
 # Define resource requests and limits for the init container
 initContainerResources:
@@ -49,68 +49,80 @@ persistence:
   data:
     name: youtrack-data
     storageClassName: csi-disk-default
-    storageType: SSD
     storageSize: 50Gi
     accessModes:
       - ReadWriteOnce
+    annotations: {}
+      # Example (T-Cloud Public EVS):
+      # everest.io/disk-volume-type: SSD
 
   logs:
     name: youtrack-logs
     storageClassName: csi-disk-default
-    storageType: SSD
     storageSize: 5Gi
     accessModes:
       - ReadWriteOnce
+    annotations: {}
+      # Example (T-Cloud Public EVS):
+      # everest.io/disk-volume-type: SSD
 
   conf:
     name: youtrack-config
     storageClassName: csi-disk-default
-    storageType: SSD
     storageSize: 1Gi
     accessModes:
       - ReadWriteOnce
+    annotations: {}
+      # Example (T-Cloud Public EVS):
+      # everest.io/disk-volume-type: SSD
 
   temp:
     enabled: false # default false, helpful when Upgrade/SetUp from Backup which is bigger then 20Gi
     name: youtrack-temp
     storageClassName: csi-disk-default
-    storageType: SSD
     storageSize: 100Gi
     accessModes:
       - ReadWriteOnce
+    annotations: {}
+      # Example (T-Cloud Public EVS):
+      # everest.io/disk-volume-type: SSD
 
 # Configure how backups will be saved
   backups:
     backupType: volumeStorage # ⚠️ Choose backupType: "objectStorage" or "volumeStorage", only one can be active at a time.
     name: youtrack-backup
+    annotations: {} # Applied to the backup PersistentVolume (PV) metadata.
+      # everest.io/reclaim-policy: retain-volume-only
 
     objectStorage: # This setting only effective when backupType is set to objectStorage
       storageClassName: csi-obsfs-retain
-      obsVolumeType: STANDARD
       fsType: obsfs
-      storageProvisioner: everest-csi-provisioner
-      region: eu-de
-      reclaimPolicy: retain-volume-only
       persistentVolumeReclaimPolicy: Retain
-      csiDriver: obs.csi.everest.io
+      csiDriver: obs.csi.everest.io # example T-Cloud Public: obs.csi.everest.io Azure: blob.csi.azure.com
+      bucketId: your-bucket-id
+      accessKeySecretKeySecretName: your-bucket-secret
+      size: 100Gi
       mountOptions: []
       accessModes:
         - ReadWriteMany
-      bucketId: your-bucked-id
-      accessKeySecretKeySecretName: your-secret
-      size: 100Gi
+      volumeAttributes: {}
+        # storage.kubernetes.io/csiProvisionerIdentity: everest-csi-provisioner
+        # everest.io/obs-volume-type: STANDARD
+        # everest.io/region: eu-de
+      annotations: {} # Applied to the backup PersistentVolumeClaim (PVC) metadata for objectStorage mode.
 
     volumeStorage: # This setting only effective when backupType is set to volumeStorage
       storageClassName: csi-disk-default
-      storageType: SATA
       storageSize: 50Gi
       accessModes:
         - ReadWriteOnce
+      annotations: {} # Applied to the backup PersistentVolumeClaim (PVC) metadata for volumeStorage mode.
+        # everest.io/disk-volume-type: SATA
 
-# Configure your Youtrack
+# Configure your YouTrack
 config:
   name: configmap
-  baseUrl: "https://youtrack.example.com" # ⚠️ NEED TO BE SET, rest is optional
+  baseUrl: "https://youtrack.example.com" # ⚠️ need to be set, rest is optional
 
 # General Parameters: https://www.jetbrains.com/help/youtrack/server/youtrack-java-start-parameters.html#general-parameters
   youtrackAdminRestore: false # default is false
