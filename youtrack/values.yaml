@@ -89,9 +89,9 @@ persistence:
 
 # Configure how backups will be saved
   backups:
-    backupType: volumeStorage # ⚠️ Choose backupType: "objectStorage" or "volumeStorage", only one can be active at a time.
+    backupType: volumeStorage # ⚠️ Choose backupType: "objectStorage" or "volumeStorage", only one can be active at a time
     name: youtrack-backup
-    annotations: {} # Applied to the backup PersistentVolume (PV) metadata.
+    annotations: {} # Applied to the backup PersistentVolume (PV) metadata
       # everest.io/reclaim-policy: retain-volume-only
 
     objectStorage: # This setting only effective when backupType is set to objectStorage
@@ -109,63 +109,64 @@ persistence:
         # storage.kubernetes.io/csiProvisionerIdentity: everest-csi-provisioner
         # everest.io/obs-volume-type: STANDARD
         # everest.io/region: eu-de
-      annotations: {} # Applied to the backup PersistentVolumeClaim (PVC) metadata for objectStorage mode.
+      annotations: {} # Applied to the backup PersistentVolumeClaim (PVC) metadata for objectStorage mode
 
     volumeStorage: # This setting only effective when backupType is set to volumeStorage
       storageClassName: csi-disk-default
       storageSize: 50Gi
       accessModes:
         - ReadWriteOnce
-      annotations: {} # Applied to the backup PersistentVolumeClaim (PVC) metadata for volumeStorage mode.
+      annotations: {} # Applied to the backup PersistentVolumeClaim (PVC) metadata for volumeStorage mode
         # everest.io/disk-volume-type: SATA
 
 # Configure your YouTrack
 config:
   name: configmap
-  baseUrl: "https://youtrack.example.com" # ⚠️ need to be set, rest is optional
+  baseUrl: "http://127.0.0.1:8080" # default for local/port-forward setup; ⚠️ set external URL for production
 
-# General Parameters: https://www.jetbrains.com/help/youtrack/server/youtrack-java-start-parameters.html#general-parameters
-  youtrackAdminRestore: false # default is false
-  youtrackSupportEmail: youtrack-feedback@jetbrains.com # default is youtrack-feedback@jetbrains.com
-  youtrackDisableCheckForUpdate: false
-  dnqTextIndexMinPrefixQueryLength: 3 # default is 3
-  youtrackMailLimit: 0 # default is 0
-  youtrackEventMergeTimeout: 60000 # default is 6000
-  youtrackDefaultPage: /dashboard # default is /dashboard
-  youtrackWebHookBaseUrl: "" # default is empty
-  httpRequestHeaderBufferSize: 102400 # default is 102400
-  httpResponseHeaderBufferSize: 102400 # default is 102400
-  youtrackLicenseName: "" # default is empty
-  youtrackLincenseKey: "" # default is empty, can be added later via WebUI
-  youtrackDumbMode: false # default is false
-  youtrackAiPlatformConfigUrl: "" # default is empty
-
-# Environmental Parameters: https://www.jetbrains.com/help/youtrack/server/youtrack-java-start-parameters.html#environmental-parameters
-  secureMode: disable  # disable (default) or tls
-  statisticsUpload: false # default is false
-
-# Authentication Throttling Parameters: https://www.jetbrains.com/help/youtrack/server/youtrack-java-start-parameters.html#throttling-parameters
-  hubAuthLoginThrottlingEnabled: false # default is false
-
-# JVM Options
-  heapDumpOnOutOfMemoryError: false # default is false
-  heapDumpPath: /dev/null # /dev/null is default
-  errorFile: "" # e.g. %APP_LOGS_DIR%%FILE_SEPARATOR%hs_err_pid%%p.log
-  javaAwtHeadless: false # default is false
-  fileEncoding: "" # e.g. UTF-8
-  enableAssertions: false # default is false
-  disableAssertions: false # default is false
-  youtrackSingleTierApp: false # default is false
-  metaspaceSize: 350m # default is 350m
-  maxMetaspaceSize: 350m # default is 350m
-  xmx: 1024m # default is 1024m
-
-# Extra Parameters
-  debug: false # default is false
-  sdebug: false # default is false
-  clearBrokenBlobs: false # default is false
-  hubAdminSkip: false # default is false
-  forceCheckDataConsistency: false # default is false
+  # Entries are written 1:1 into /opt/youtrack/conf/youtrack.jvmoptions
+  # Docs:
+  # - Configure JVM options: https://www.jetbrains.com/help/youtrack/server/configure-jvm-options.html
+  # - Configuration parameters: https://www.jetbrains.com/help/youtrack/server/youtrack-java-start-parameters.html
+  # -Dlisten-port is reserved:
+  # - the chart configures listen-port via init container: configure --listen-port=<service.port>
+  # - do not set -Dlisten-port in config.options (rendering fails)
+  options:
+# Examples:
+#    - -Ddisable.configuration.wizard.on.upgrade=true
+#    - -Djetbrains.youtrack.admin.restore=false
+#    - -Djetbrains.youtrack.support.email=youtrack-feedback@jetbrains.com
+#    - -Djetbrains.youtrack.disableCheckForUpdate=false
+#    - -Djetbrains.dnq.textIndex.minPrefixQueryLength=3
+#    - -Djetbrains.youtrack.mailLimit=0
+#    - -Djetbrains.youtrack.event.merge.timeout=60000
+#    - -Djetbrains.youtrack.default.page=/dashboard
+#    - -Djetbrains.youtrack.webHooksBaseUrl=
+#    - -Djetbrains.http.request.header.buffer.size=102400
+#    - -Djetbrains.http.response.header.buffer.size=102400
+#    - -Djetbrains.youtrack.licenseName=
+#    - -Djetbrains.youtrack.licenseKey=
+#    - -Djetbrains.youtrack.dumbMode=false
+#    - -Djetbrains.youtrack.ai.platform.config.url=
+#    - -Djetbrains.youtrack.singleTierApp=false
+#    - -Djetbrains.hub.auth.login.throttling.enabled=false
+#    - -Djetbrains.hub.admin.skip=false
+#    - -Dsecure-mode=disable
+#    - -Dstatistics-upload=false
+#    - -Dexodus.log.forceCheckDataConsistency=false
+#    - -Dexodus.entityStore.refactoring.clearBrokenBlobs=false
+#    - -Dfile.encoding=UTF-8
+#    - -Djava.awt.headless=false
+#    - -ea
+#    - -da
+#    - -debug
+#    - -sdebug
+#    - -XX:-HeapDumpOnOutOfMemoryError
+#    - -XX:HeapDumpPath=/dev/null
+#    - -XX:ErrorFile=%APP_LOGS_DIR%%FILE_SEPARATOR%hs_err_pid%%p.log
+#    - -XX:MetaspaceSize=350m
+#    - -XX:MaxMetaspaceSize=350m
+#    - -Xmx1024m
 
 # Service definition
 service:

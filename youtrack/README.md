@@ -8,12 +8,17 @@ This flexible and dynamic Helm chart deploys YouTrack on a Kubernetes cluster us
 
 It supports extensive customization through `values.yaml`, allowing you to tailor storage, networking, and security settings to your environment.
 
-An `initContainer` configures the `baseUrl` before startup, ensuring proper service behavior behind reverse proxies.
+An `initContainer` configures both `baseUrl` and `listen-port` before startup, ensuring proper service behavior behind reverse proxies.
 
 ## ⚠️ Breaking Changes (2.0.0)
 If you are upgrading from `1.x`, migration steps are required.
 
 Please follow the migration guide: [MIGRATION-1.x-to-2.0.0.md](https://github.com/TWENTY-20/helm-charts/blob/main/youtrack/MIGRATION-1.x-to-2.0.0.md)
+
+## ⚠️ Breaking Changes (3.0.0)
+If you are upgrading from `2.x`, migration steps are required.
+
+Please follow the migration guide: [MIGRATION-2.x-to-3.0.0.md](https://github.com/TWENTY-20/helm-charts/blob/main/youtrack/MIGRATION-2.x-to-3.0.0.md)
 
 ---
 ## ✨ Features
@@ -35,12 +40,24 @@ Please follow the migration guide: [MIGRATION-1.x-to-2.0.0.md](https://github.co
 ## ⚙️ Configuration
 Please refer to the values.yaml file for a complete reference of all available configuration parameters.
 
-<span style="color:red">**REQUIRED:**</span>
+<span style="color:red;">**REQUIRED:**</span>
+
 #### <span style="color:red;">Base URL</span>
-before Installation set baseUrl via `values.yaml`
+Default for local/port-forward usage:
 ```yaml
 config:
-  baseUrl: "https://youtrack.example.com"
+  baseUrl: "http://127.0.0.1:8080"
+```
+For production/external access, set your real public URL instead (for example `https://youtrack.example.com`).
+If you keep the local default, set `ingress.enabled: false` and use port-forward access.
+```yaml
+config:
+  baseUrl: "http://127.0.0.1:8080"
+ingress:
+  enabled: false
+```
+```bash
+kubectl port-forward svc/http 8080:8080 -n <namespace>
 ```
 
 #### <span style="color:red;">Backups</span>
@@ -75,8 +92,23 @@ kubectl exec -n namespace -it pod-name -- cat /opt/youtrack/conf/internal/servic
 ```
 ℹ️ Or simply check the pod logs during startup
 
----
 <span style="color:yellow;">**OPTIONAL:**</span>
+
+#### <span style="color:yellow;">Startup Options (3.x, Optional)</span>
+Set startup configuration dynamically in `values.yaml` via one single `config.options` block:
+```yaml
+config:
+  baseUrl: "http://127.0.0.1:8080"
+  options:
+    - -Ddisable.configuration.wizard.on.upgrade=true
+    - -Djetbrains.youtrack.disableCheckForUpdate=true
+    - -Xmx2048m
+    - -XX:MaxMetaspaceSize=512m
+```
+`-Dlisten-port` is reserved; the chart sets it from `service.port` via init `configure --listen-port`, so do not set `-Dlisten-port` in `config.options`.
+
+---
+
 
 #### <span style="color:yellow;">Persistence Configuration</span>
 

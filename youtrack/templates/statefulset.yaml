@@ -63,7 +63,7 @@ spec:
               mountPath: /opt/youtrack/backups
           resources:
             {{- toYaml .Values.initContainerResources | nindent 12 }}
-          args: ["configure", "--base-url={{ .Values.config.baseUrl }}"]
+          args: ["configure", "--base-url={{ .Values.config.baseUrl }}", "--listen-port={{ .Values.service.port }}"]
       containers:
         - name: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}
           securityContext:
