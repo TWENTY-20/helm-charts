@@ -1,53 +1,58 @@
+{{- if and (ne .Values.persistence.backups.backupType "objectStorage") (ne .Values.persistence.backups.backupType "volumeStorage") -}}
+{{- fail (printf "Invalid persistence.backups.backupType=%q. Allowed values: objectStorage, volumeStorage." .Values.persistence.backups.backupType) -}}
+{{- end -}}
+### OBJECT STORAGE PV ###
 {{- if eq .Values.persistence.backups.backupType "objectStorage" }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: {{ .Values.persistence.backups.name }}
-  namespace: {{ .Release.Namespace }}
+  {{- with .Values.persistence.backups.annotations }}
   annotations:
-    pv.kubernetes.io/provisioned-by: {{ .Values.persistence.backups.objectStorage.storageProvisioner }}
-    everest.io/reclaim-policy: {{ .Values.persistence.backups.objectStorage.reclaimPolicy }}
+{{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
-  accessModes: {{ .Values.persistence.backups.objectStorage.accessModes }}
+  accessModes:
+{{- toYaml .Values.persistence.backups.objectStorage.accessModes | nindent 4 }}
   capacity:
     storage: {{ .Values.persistence.backups.objectStorage.size }}
   csi:
     driver: {{ .Values.persistence.backups.objectStorage.csiDriver }}
     fsType: {{ .Values.persistence.backups.objectStorage.fsType }}
     volumeHandle: {{ .Values.persistence.backups.objectStorage.bucketId }}
+    {{- with .Values.persistence.backups.objectStorage.volumeAttributes }}
     volumeAttributes:
-      storage.kubernetes.io/csiProvisionerIdentity: {{ .Values.persistence.backups.objectStorage.storageProvisioner }}
-      everest.io/obs-volume-type: {{ .Values.persistence.backups.objectStorage.obsVolumeType }}
-      everest.io/region: {{ .Values.persistence.backups.objectStorage.region }}
+{{- toYaml . | nindent 6 }}
+    {{- end }}
     nodePublishSecretRef:
       name: {{ .Values.persistence.backups.objectStorage.accessKeySecretKeySecretName }}
       namespace: {{ .Release.Namespace }}
   persistentVolumeReclaimPolicy: {{ .Values.persistence.backups.objectStorage.persistentVolumeReclaimPolicy }}
   storageClassName: {{ .Values.persistence.backups.objectStorage.storageClassName }}
+  {{- with .Values.persistence.backups.objectStorage.mountOptions }}
   mountOptions:
-    {{- if .Values.persistence.backups.objectStorage.mountOptions }}
-    {{ .Values.persistence.backups.objectStorage.mountOptions | toYaml | nindent 4 }}
-    {{- end }}
+{{- toYaml . | nindent 4 }}
+  {{- end }}
 ---
+### OBJECT STORAGE PVC ###
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ .Values.persistence.backups.name }}
   namespace: {{ .Release.Namespace }}
+  {{- with .Values.persistence.backups.objectStorage.annotations }}
   annotations:
-    volume.beta.kubernetes.io/storage-provisioner: {{ .Values.persistence.backups.objectStorage.storageProvisioner }}
-    csi.storage.k8s.io/fstype: {{ .Values.persistence.backups.objectStorage.fsType }}
-    everest.io/obs-volume-type: {{ .Values.persistence.backups.objectStorage.obsVolumeType }}
-    csi.storage.k8s.io/node-publish-secret-namespace: {{ .Release.Namespace }}
-    csi.storage.k8s.io/node-publish-secret-name: {{ .Values.persistence.backups.objectStorage.accessKeySecretKeySecretName }}
+{{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   volumeName: {{ .Values.persistence.backups.name }}
   storageClassName: {{ .Values.persistence.backups.objectStorage.storageClassName }}
-  accessModes: {{ .Values.persistence.backups.objectStorage.accessModes }}
+  accessModes:
+{{- toYaml .Values.persistence.backups.objectStorage.accessModes | nindent 4 }}
   resources:
     requests:
       storage: {{ .Values.persistence.backups.objectStorage.size }}
-
+### VOLUME STORAGE PVC ###
 {{- else if eq .Values.persistence.backups.backupType "volumeStorage" }}
 ---
 apiVersion: v1
@@ -55,11 +60,14 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ .Values.persistence.backups.name }}
   namespace: {{ .Release.Namespace }}
+  {{- with .Values.persistence.backups.volumeStorage.annotations }}
   annotations:
-    everest.io/disk-volume-type: {{ .Values.persistence.backups.volumeStorage.storageType }}
+{{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   storageClassName: {{ .Values.persistence.backups.volumeStorage.storageClassName }}
-  accessModes: {{ .Values.persistence.backups.volumeStorage.accessModes }}
+  accessModes:
+{{- toYaml .Values.persistence.backups.volumeStorage.accessModes | nindent 4 }}
   resources:
     requests:
       storage: {{ .Values.persistence.backups.volumeStorage.storageSize }}

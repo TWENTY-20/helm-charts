@@ -3,11 +3,14 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ .Values.persistence.logs.name }}
   namespace: {{ .Release.Namespace }}
+  {{- with .Values.persistence.logs.annotations }}
   annotations:
-    everest.io/disk-volume-type: {{ .Values.persistence.logs.storageType }}
+{{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   storageClassName: {{ .Values.persistence.logs.storageClassName }}
-  accessModes: {{ .Values.persistence.logs.accessModes }}
+  accessModes:
+{{- toYaml .Values.persistence.logs.accessModes | nindent 4 }}
   resources:
     requests:
       storage: {{ .Values.persistence.logs.storageSize }}

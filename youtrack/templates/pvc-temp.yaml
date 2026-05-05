@@ -1,0 +1,18 @@
+{{- if .Values.persistence.temp.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.persistence.temp.name }}
+  namespace: {{ .Release.Namespace }}
+  {{- with .Values.persistence.temp.annotations }}
+  annotations:
+{{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  storageClassName: {{ .Values.persistence.temp.storageClassName }}
+  accessModes:
+{{- toYaml .Values.persistence.temp.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.temp.storageSize }}
+{{- end }}

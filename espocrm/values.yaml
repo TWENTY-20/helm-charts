@@ -2,7 +2,7 @@ image:
   # Image repository for EspoCRM
   repository: espocrm/espocrm
   pullPolicy: Always
-  tag: "9.2.5-fpm-alpine"
+  tag: "9.3.4-fpm-alpine"
 
 # Secret(s) for pulling images from a private container registry. Leave empty if not needed.
 imagePullSecrets: []
@@ -178,7 +178,7 @@ nginx:
     repository: nginx
     # https://hub.docker.com/_/nginx/tags?page=1&name=alpine-slim
     pullPolicy: Always
-    tag: 1.29.4-alpine-slim
+    tag: 1.30.0-alpine-slim
 
   # Define resource requests and limits for the nginx container. Leave empty to use Kubernetes defaults (no limits).
   resources: []
