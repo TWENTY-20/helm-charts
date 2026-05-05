@@ -168,6 +168,54 @@ config:
 #    - -XX:MaxMetaspaceSize=350m
 #    - -Xmx1024m
 
+  # ConfigMap mount strategy for youtrack.jvmoptions file
+  # - "copy": Mount ConfigMap to /tmp and copy file to /opt/youtrack/conf (default, more portable)
+  # - "subPath": Mount ConfigMap directly using subPath (may cause issues with some CSI drivers like NFS-CSI)
+  mountStrategy: subPath
+
+# General Parameters: https://www.jetbrains.com/help/youtrack/server/youtrack-java-start-parameters.html#general-parameters
+  youtrackAdminRestore: false # default is false
+  youtrackSupportEmail: youtrack-feedback@jetbrains.com # default is youtrack-feedback@jetbrains.com
+  youtrackDisableCheckForUpdate: false
+  dnqTextIndexMinPrefixQueryLength: 3 # default is 3
+  youtrackMailLimit: 0 # default is 0
+  youtrackEventMergeTimeout: 60000 # default is 6000
+  youtrackDefaultPage: /dashboard # default is /dashboard
+  youtrackWebHookBaseUrl: "" # default is empty
+  httpRequestHeaderBufferSize: 102400 # default is 102400
+  httpResponseHeaderBufferSize: 102400 # default is 102400
+  youtrackLicenseName: "" # default is empty
+  youtrackLincenseKey: "" # default is empty, can be added later via WebUI
+  youtrackDumbMode: false # default is false
+  youtrackAiPlatformConfigUrl: "" # default is empty
+
+# Environmental Parameters: https://www.jetbrains.com/help/youtrack/server/youtrack-java-start-parameters.html#environmental-parameters
+  secureMode: disable  # disable (default) or tls
+  statisticsUpload: false # default is false
+
+# Authentication Throttling Parameters: https://www.jetbrains.com/help/youtrack/server/youtrack-java-start-parameters.html#throttling-parameters
+  hubAuthLoginThrottlingEnabled: false # default is false
+
+# JVM Options
+  heapDumpOnOutOfMemoryError: false # default is false
+  heapDumpPath: /dev/null # /dev/null is default
+  errorFile: "" # e.g. %APP_LOGS_DIR%%FILE_SEPARATOR%hs_err_pid%%p.log
+  javaAwtHeadless: false # default is false
+  fileEncoding: "" # e.g. UTF-8
+  enableAssertions: false # default is false
+  disableAssertions: false # default is false
+  youtrackSingleTierApp: false # default is false
+  metaspaceSize: 350m # default is 350m
+  maxMetaspaceSize: 350m # default is 350m
+  xmx: 1024m # default is 1024m
+
+# Extra Parameters
+  debug: false # default is false
+  sdebug: false # default is false
+  clearBrokenBlobs: false # default is false
+  hubAdminSkip: false # default is false
+  forceCheckDataConsistency: false # default is false
+
 # Service definition
 service:
   enabled: true
