@@ -107,6 +107,31 @@ config:
 ```
 `-Dlisten-port` is reserved; the chart sets it from `service.port` via init `configure --listen-port`, so do not set `-Dlisten-port` in `config.options`.
 
+`config.mountStrategy` controls how `youtrack.jvmoptions` is injected:
+- `subPath` (default): mount `youtrack.jvmoptions` directly from ConfigMap.
+- `copy`: init container mounts ConfigMap at `/tmp/youtrack-config` and copies the file into `/opt/youtrack/conf`.
+
+The chart adds a ConfigMap checksum annotation to the StatefulSet pod template, so changes in `config.options` trigger an automatic rolling restart.
+
+#### <span style="color:yellow;">Database Cleanup (One-Time Recovery)</span>
+If backup size grows quickly and logs contain `GC is disabled on database`, use Xodus recovery flags only as a temporary maintenance action.
+
+Example (one-time run only):
+```yaml
+config:
+  options:
+    - -Dexodus.env.compactOnOpen=true
+    - -Dexodus.entityStore.refactoring.missedLinks=true
+    - -Dexodus.gc.utilization.fromScratch=true
+```
+
+Important:
+- Take a fresh backup before running recovery flags.
+- Plan downtime: `compactOnOpen` can keep YouTrack offline for a long time during startup.
+- Ensure enough free space on `/opt/youtrack/data` (roughly at least current DB size) for compaction temp data.
+- Remove the recovery flags after one successful restart, then restart normally again.
+- If `.del` files remain afterwards, delete them only while YouTrack is stopped and only after a fresh backup.
+
 ---
 
 

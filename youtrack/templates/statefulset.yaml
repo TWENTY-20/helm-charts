@@ -13,6 +13,7 @@ spec:
       labels:
         app: {{ .Values.nameOverride | default .Release.Name }}
       annotations:
+        checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -61,9 +62,21 @@ spec:
               mountPath: /opt/youtrack/logs
             - name: {{ .Values.persistence.backups.name }}
               mountPath: /opt/youtrack/backups
+            {{- if eq .Values.config.mountStrategy "copy" }}
+            - name: {{ .Values.config.name }}
+              mountPath: /tmp/youtrack-config
+            {{- end }}
           resources:
             {{- toYaml .Values.initContainerResources | nindent 12 }}
+          {{- if eq .Values.config.mountStrategy "copy" }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              cp /tmp/youtrack-config/youtrack.jvmoptions /opt/youtrack/conf/youtrack.jvmoptions
+              /opt/youtrack/bin/youtrack.sh configure "--base-url={{ .Values.config.baseUrl }}" "--listen-port={{ .Values.service.port }}"
+          {{- else }}
           args: ["configure", "--base-url={{ .Values.config.baseUrl }}", "--listen-port={{ .Values.service.port }}"]
+          {{- end }}
       containers:
         - name: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}
           securityContext:
@@ -89,9 +102,11 @@ spec:
             - name: {{ .Values.persistence.temp.name }}
               mountPath: /opt/youtrack/temp
             {{- end }}
+            {{- if eq .Values.config.mountStrategy "subPath" }}
             - name: {{ .Values.config.name }}
               mountPath: /opt/youtrack/conf/youtrack.jvmoptions
               subPath: youtrack.jvmoptions
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

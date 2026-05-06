@@ -131,6 +131,11 @@ config:
   # -Dlisten-port is reserved:
   # - the chart configures listen-port via init container: configure --listen-port=<service.port>
   # - do not set -Dlisten-port in config.options (rendering fails)
+  # Mount strategy for youtrack.jvmoptions from ConfigMap:
+  # - "subPath": mount file directly in app container (default)
+  # - "copy": mount ConfigMap in init container and copy file into /opt/youtrack/conf
+  #   useful when your CSI driver has issues with subPath file mounts
+  mountStrategy: subPath
   options:
 # Examples:
 #    - -Ddisable.configuration.wizard.on.upgrade=true
@@ -155,6 +160,9 @@ config:
 #    - -Dstatistics-upload=false
 #    - -Dexodus.log.forceCheckDataConsistency=false
 #    - -Dexodus.entityStore.refactoring.clearBrokenBlobs=false
+#    - -Dexodus.env.compactOnOpen=true
+#    - -Dexodus.entityStore.refactoring.missedLinks=true
+#    - -Dexodus.gc.utilization.fromScratch=true
 #    - -Dfile.encoding=UTF-8
 #    - -Djava.awt.headless=false
 #    - -ea
