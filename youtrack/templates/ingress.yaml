@@ -1,14 +1,24 @@
-{{- if and .Values.ingress.enabled }}
+{{- if .Values.ingress.enabled }}
+{{- $mode := default "auto" .Values.ingress.configMode }}
+{{- if and (ne $mode "auto") (ne $mode "manual") }}
+{{- fail "ingress.configMode must be either 'auto' or 'manual'" }}
+{{- end }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Values.ingress.name }}
   namespace: {{ .Release.Namespace }}
+  {{- with .Values.ingress.annotations }}
   annotations:
-    {{- range $key, $value := .Values.ingress.annotations }}
+    {{- range $key, $value := . }}
     {{ $key }}: {{ $value | quote }}
     {{- end }}
+  {{- end }}
 spec:
+  {{- if and (eq $mode "manual") .Values.ingress.ingressClassName }}
+  ingressClassName: {{ .Values.ingress.ingressClassName }}
+  {{- end }}
+  {{- if eq $mode "auto" }}
   rules:
     - host: {{ .Values.config.baseUrl | trimPrefix "https://" | trimPrefix "http://" }}
       http:
@@ -24,4 +34,51 @@ spec:
     - secretName: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}-letsencrypt-cert
       hosts:
         - {{ .Values.config.baseUrl | trimPrefix "https://" | trimPrefix "http://" }}
+  {{- else }}
+  {{- $hosts := default (list) .Values.ingress.hosts }}
+  {{- if eq (len $hosts) 0 }}
+  {{- fail "ingress.hosts must contain at least one entry when ingress.configMode=manual" }}
+  {{- end }}
+  rules:
+    {{- range $host := $hosts }}
+    {{- if not $host.host }}
+    {{- fail "each ingress.hosts entry needs a host value when ingress.configMode=manual" }}
+    {{- end }}
+    {{- $paths := default (list) $host.paths }}
+    {{- if eq (len $paths) 0 }}
+    {{- fail "each ingress.hosts entry needs at least one path when ingress.configMode=manual" }}
+    {{- end }}
+    - host: {{ $host.host | quote }}
+      http:
+        paths:
+          {{- range $path := $paths }}
+          {{- if not $path.path }}
+          {{- fail "each ingress.hosts[].paths entry needs a path value when ingress.configMode=manual" }}
+          {{- end }}
+          - path: {{ $path.path }}
+            pathType: {{ default "Prefix" $path.pathType }}
+            backend:
+              service:
+                name: {{ $.Values.service.name }}
+                port:
+                  number: {{ $.Values.service.port }}
+          {{- end }}
+    {{- end }}
+  {{- with .Values.ingress.tls }}
+  tls:
+    {{- range $tls := . }}
+    {{- if not $tls.secretName }}
+    {{- fail "each ingress.tls entry needs secretName when ingress.configMode=manual" }}
+    {{- end }}
+    - secretName: {{ $tls.secretName }}
+      {{- $tlsHosts := default (list) $tls.hosts }}
+      {{- if gt (len $tlsHosts) 0 }}
+      hosts:
+        {{- range $tlsHost := $tlsHosts }}
+        - {{ $tlsHost | quote }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- end }}
 {{- end }}

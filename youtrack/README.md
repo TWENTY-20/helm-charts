@@ -23,7 +23,7 @@ Please follow the migration guide: [MIGRATION-2.x-to-3.0.0.md](https://github.co
 ---
 ## ✨ Features
 - Runs the official YouTrack [Docker image](https://hub.docker.com/r/jetbrains/youtrack)
-- Supports persistent storage for data, logs and configuration
+- Supports persistent storage for data, logs, configuration and temp (optional)
 - Supports backup via volumeStorage or objectStorage (tested with T-Cloud Public and Azure)
 - Traefik compatible
 - Cert-Manager compatible
@@ -93,6 +93,8 @@ kubectl exec -n namespace -it pod-name -- cat /opt/youtrack/conf/internal/servic
 ℹ️ Or simply check the pod logs during startup
 
 <span style="color:yellow;">**OPTIONAL:**</span>
+
+
 
 #### <span style="color:yellow;">Startup Options (3.x, Optional)</span>
 Set startup configuration dynamically in `values.yaml` via one single `config.options` block:
@@ -176,7 +178,37 @@ ipWhitelist:
 **Important:**
 If ipWhitelist.enabled is true, update your ingress annotations to include the whitelist middleware:
 ```traefik.ingress.kubernetes.io/router.middlewares: ip-whitelist@kubernetescrd```
+---
+#### <span style="color:yellow;">Ingress Config Mode</span>
+Ingress supports two modes:
 
+- `auto` (default): keeps the current behavior and derives host/TLS host from `config.baseUrl`.
+- `manual`: uses explicit `ingress.hosts`, `ingress.tls`, and optional `ingress.ingressClassName`.
+- In `manual` mode, annotations are fully user-managed. Make sure your annotations match the selected controller/class.
+
+Default (`auto`):
+```yaml
+ingress:
+  enabled: true
+  configMode: auto
+```
+
+Manual:
+```yaml
+ingress:
+  enabled: true
+  configMode: manual
+  ingressClassName: traefik
+  hosts:
+    - host: youtrack.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: youtrack-letsencrypt-cert
+      hosts:
+        - youtrack.example.com
+```
 ---
 #### <span style="color:yellow;">Port Forwarding with Traefik Ingress</span>
 
