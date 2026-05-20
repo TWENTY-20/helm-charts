@@ -134,6 +134,17 @@ Important:
 - Remove the recovery flags after one successful restart, then restart normally again.
 - If `.del` files remain afterwards, delete them only while YouTrack is stopped and only after a fresh backup.
 
+#### <span style="color:yellow;">GC Transaction Timeout (Large Installations)</span>
+If logs contain errors like `GC for database /opt/youtrack/data/youtrack was interrupted because of timeout (500 ms) while cleaning file ...`, increase the GC transaction timeout.
+
+```yaml
+config:
+  options:
+    - -Dexodus.gc.transactionTimeout=5000
+```
+
+Value is in milliseconds. Increase only when needed.
+
 ---
 
 
