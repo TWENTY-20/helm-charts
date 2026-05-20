@@ -107,7 +107,7 @@ config:
     - -Xmx2048m
     - -XX:MaxMetaspaceSize=512m
 ```
-`-Dlisten-port` is reserved; the chart sets it from `service.port` via init `configure --listen-port`, so do not set `-Dlisten-port` in `config.options`.
+`-Dbase-url` and `-Dlisten-port` are reserved; the chart sets base-url from `config.baseUrl` (init `configure --base-url` and ConfigMap) and listen-port from `service.port` (init `configure --listen-port`), so do not set either in `config.options`.
 
 `config.mountStrategy` controls how `youtrack.jvmoptions` is injected:
 - `subPath` (default): mount `youtrack.jvmoptions` directly from ConfigMap.

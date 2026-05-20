@@ -5,13 +5,20 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   youtrack.jvmoptions: |
+    {{- $baseUrl := trim (toString .Values.config.baseUrl) }}
+    {{- if not $baseUrl }}
+    {{- fail "config.baseUrl must be set to a non-empty URL." }}
+    {{- end }}
     {{- range $option := .Values.config.options }}
     {{- $optionString := trim (toString $option) }}
+    {{- if regexMatch "^-Dbase-url=.*$" $optionString }}
+    {{- fail "Do not set -Dbase-url in config.options. Set config.baseUrl instead; the chart configures base-url via init container and writes -Dbase-url into ConfigMap." }}
+    {{- end }}
     {{- if regexMatch "^-Dlisten-port=.*$" $optionString }}
     {{- fail "Do not set -Dlisten-port in config.options. Set service.port instead; the chart configures listen-port via init container configure --listen-port." }}
     {{- end }}
     {{- end }}
-
+    -Dbase-url={{ $baseUrl }}
     {{- range $option := .Values.config.options }}
     {{- if $option }}
     {{ $option }}

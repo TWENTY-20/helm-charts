@@ -122,15 +122,17 @@ persistence:
 # Configure your YouTrack
 config:
   name: configmap
-  baseUrl: "http://127.0.0.1:8080" # default for local/port-forward setup; ⚠️ set external URL for production
+  baseUrl: "http://127.0.0.1:8080" # local/port-forward default (set ingress.enabled=false); for ingress/production use a public URL without port, e.g. https://youtrack.example.com
 
   # Entries are written 1:1 into /opt/youtrack/conf/youtrack.jvmoptions
   # Docs:
   # - Configure JVM options: https://www.jetbrains.com/help/youtrack/server/configure-jvm-options.html
   # - Configuration parameters: https://www.jetbrains.com/help/youtrack/server/youtrack-java-start-parameters.html
-  # -Dlisten-port is reserved:
+  # -Dbase-url and -Dlisten-port are reserved:
+  # - the chart writes -Dbase-url from config.baseUrl into ConfigMap
+  # - the chart configures base-url via init container: configure --base-url=<config.baseUrl>
   # - the chart configures listen-port via init container: configure --listen-port=<service.port>
-  # - do not set -Dlisten-port in config.options (rendering fails)
+  # - do not set -Dbase-url or -Dlisten-port in config.options (rendering fails)
   # Mount strategy for youtrack.jvmoptions from ConfigMap:
   # - "subPath": mount file directly in app container (default)
   # - "copy": mount ConfigMap in init container and copy file into /opt/youtrack/conf

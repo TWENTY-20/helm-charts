@@ -16,8 +16,12 @@ Do not start the migration without a verified backup.
 
 1. `youtrack/templates/configmap.yaml` is now fully dynamic and renders exactly one list.
 2. The old fixed `config.*` JVM-related keys were removed from `values.yaml` (they now remain as commented examples only).
-3. Startup config is now defined only via `config.options` and rendered as-is line by line.
-4. `service.port` is now the single source of truth for the runtime listen port.
+3. Startup config is now defined via `config.options` and rendered as-is line by line, with reserved runtime keys managed by the chart.
+4. `config.baseUrl` is now the single source of truth for runtime base URL.
+   - the chart writes `-Dbase-url=<config.baseUrl>` into ConfigMap
+   - the chart configures base-url via init container: `configure --base-url=<config.baseUrl>`
+   - do not set `-Dbase-url=...` in `config.options` (chart rendering fails if you do)
+5. `service.port` is now the single source of truth for the runtime listen port.
    - the chart always configures listen-port via init container: `configure --listen-port=<service.port>`
    - do not set `-Dlisten-port=...` in `config.options` (chart rendering fails if you do)
 
@@ -82,17 +86,18 @@ service:
 
 1. Copy your current production values into a dedicated migration values file.
 2. Move all old `config.*` JVM-related keys into `config.options` as raw JVM option lines.
-3. Add any new custom property you need (for example `-Ddisable.configuration.wizard.on.upgrade=true`).
-4. Run a dry-run render:
+3. Keep `config.baseUrl` as dedicated chart value and do not add `-Dbase-url` to `config.options`.
+4. Add any new custom property you need (for example `-Ddisable.configuration.wizard.on.upgrade=true`).
+5. Run a dry-run render:
 
 ```bash
 helm template <release> ./youtrack -f <migrated-values.yaml>
 ```
 
-5. Run a dry-run upgrade in the target namespace:
+6. Run a dry-run upgrade in the target namespace:
 
 ```bash
 helm upgrade <release> ./youtrack -n <namespace> -f <migrated-values.yaml> --dry-run
 ```
 
-6. If output is clean, perform the real upgrade.
+7. If output is clean, perform the real upgrade.
