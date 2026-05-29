@@ -30,6 +30,7 @@ Please follow the migration guide: [MIGRATION-2.x-to-3.0.0.md](https://github.co
 - Easy whitelisting of Traefik & Cert-Manager for NetworkPolicy deny-all setups
 - IP-based access restriction support
 - Possibility to set securityContext and resource limits
+- Optional sidecar containers and additional pod volumes via `values.yaml`
 - Highly customizable via `values.yaml`
 
 ---
@@ -145,6 +146,28 @@ config:
 
 Value is in milliseconds. Increase only when needed.
 
+---
+
+#### <span style="color:yellow;">Sidecars (Optional)</span>
+You can attach one or more sidecar containers and additional pod volumes via `values.yaml`.
+
+```yaml
+sidecars:
+  containers:
+    - name: vpn
+      image: ghcr.io/example/vpn:1.0
+      volumeMounts:
+        - name: vpn-config
+          mountPath: /vpn
+  volumes:
+    - name: vpn-config
+      secret:
+        secretName: vpn-secret
+```
+
+Important:
+- `sidecars.containers` accepts complete Kubernetes container specs.
+- `sidecars.volumes` appends pod-level volumes. (Use existing chart volumes or reference pre-created PVCs)
 ---
 
 

@@ -225,6 +225,12 @@ networkPolicyWhitelist:
     enabled: false
     port: 8089
 
+# Optional sidecar containers and pod volumes.
+# Keep arrays empty to disable.
+sidecars:
+  containers: []
+  volumes: []
+
 # Optional: Override names and configure pod scheduling preferences
 nameOverride: ""
 fullnameOverride: ""
