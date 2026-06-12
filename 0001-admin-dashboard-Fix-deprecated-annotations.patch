@@ -1,0 +1,58 @@
+From a35f7cc2aa53067e5030e4fd03702d50e2664904 Mon Sep 17 00:00:00 2001
+From: Hannah Izzie Gesser <hannah.gesser@twenty20.de>
+Date: Thu, 11 Jun 2026 17:55:45 +0200
+Subject: [PATCH] admin-dashboard: Fix deprecated annotations
+
+Replaces the deprecated `kubernetes.io/ingress.class` annotation
+with `spec.ingressClassName`
+---
+ admin-dashboard/Chart.yaml                   | 2 +-
+ admin-dashboard/templates/ingress-route.yaml | 3 +++
+ admin-dashboard/values.yaml                  | 3 ++-
+ 3 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/admin-dashboard/Chart.yaml b/admin-dashboard/Chart.yaml
+index 54fcee5..bfcef53 100644
+--- a/admin-dashboard/Chart.yaml
++++ b/admin-dashboard/Chart.yaml
+@@ -3,7 +3,7 @@ name: admin-dashboard
+ description: A Helm chart for deploying admin-dashboard on Kubernetes
+ type: application
+ icon: https://raw.githubusercontent.com/TWENTY-20/helm-charts/main/admin-dashboard/icon.png
+-version: 1.0.10
++version: 1.1.0
+ appVersion: "1.29.5-alpine-slim"
+ 
+ keywords:
+diff --git a/admin-dashboard/templates/ingress-route.yaml b/admin-dashboard/templates/ingress-route.yaml
+index 6984d45..df0b723 100644
+--- a/admin-dashboard/templates/ingress-route.yaml
++++ b/admin-dashboard/templates/ingress-route.yaml
+@@ -23,4 +23,7 @@ spec:
+       services:
+         - name: {{ .Values.service.name }}
+           port: {{ .Values.service.port }}
++{{- end }}
++{{- with .Values.ingress.spec }}
++{{ toYaml . | indent 2 }}
+ {{- end }}
+\ No newline at end of file
+diff --git a/admin-dashboard/values.yaml b/admin-dashboard/values.yaml
+index 5832cdd..3f33c8f 100644
+--- a/admin-dashboard/values.yaml
++++ b/admin-dashboard/values.yaml
+@@ -51,9 +51,10 @@ ingress:
+   entryPoints:
+     - websecure
+   annotations:
+-    kubernetes.io/ingress.class: traefik
+     kubernetes.io/tls-acme: "true"
+     cert-manager.io/cluster-issuer: "letsencrypt-prod"
++  spec:
++    ingressClassName: traefik
+   middlewares: []
+   #  - name: example-middleware-name
+     #  namespace: example-middleware-namespace
+-- 
+2.54.0
+

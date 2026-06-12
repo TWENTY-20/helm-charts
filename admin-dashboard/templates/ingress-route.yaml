@@ -24,3 +24,6 @@ spec:
         - name: {{ .Values.service.name }}
           port: {{ .Values.service.port }}
 {{- end }}
+{{- with .Values.ingress.spec }}
+{{ toYaml . | indent 2 }}
+{{- end }}
