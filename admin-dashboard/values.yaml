@@ -51,9 +51,10 @@ ingress:
   entryPoints:
     - websecure
   annotations:
-    kubernetes.io/ingress.class: traefik
     kubernetes.io/tls-acme: "true"
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  spec:
+    ingressClassName: traefik
   middlewares: []
   #  - name: example-middleware-name
     #  namespace: example-middleware-namespace
