@@ -225,6 +225,13 @@ networkPolicyWhitelist:
     enabled: false
     port: 8089
 
+# Optional static hostname entries added to the pod's /etc/hosts.
+# Keep array empty to disable.
+hostAliases: []
+# - ip: "192.0.2.10"
+#   hostnames:
+#     - "jira.avat.local"
+
 # Optional sidecar containers and pod volumes.
 # Keep arrays empty to disable.
 sidecars:

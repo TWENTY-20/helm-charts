@@ -30,6 +30,7 @@ Please follow the migration guide: [MIGRATION-2.x-to-3.0.0.md](https://github.co
 - Easy whitelisting of Traefik & Cert-Manager for NetworkPolicy deny-all setups
 - IP-based access restriction support
 - Possibility to set securityContext and resource limits
+- Optional pod host aliases via `values.yaml`
 - Optional sidecar containers and additional pod volumes via `values.yaml`
 - Highly customizable via `values.yaml`
 
@@ -168,6 +169,17 @@ sidecars:
 Important:
 - `sidecars.containers` accepts complete Kubernetes container specs.
 - `sidecars.volumes` appends pod-level volumes. (Use existing chart volumes or reference pre-created PVCs)
+---
+
+#### <span style="color:yellow;">Host Aliases (Optional)</span>
+You can add static hostname entries to the YouTrack pod's `/etc/hosts` via `values.yaml`.
+
+```yaml
+hostAliases:
+  - ip: "192.0.2.10"
+    hostnames:
+      - "jira.avat.local"
+```
 ---
 
 
