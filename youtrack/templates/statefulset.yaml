@@ -69,6 +69,10 @@ spec:
               mountPath: /opt/youtrack/logs
             - name: {{ .Values.persistence.backups.name }}
               mountPath: /opt/youtrack/backups
+            {{- if .Values.persistence.temp.enabled }}
+            - name: {{ .Values.persistence.temp.name }}
+              mountPath: /opt/youtrack/temp
+            {{- end }}
             {{- if eq .Values.config.mountStrategy "copy" }}
             - name: {{ .Values.config.name }}
               mountPath: /tmp/youtrack-config
