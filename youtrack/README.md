@@ -127,12 +127,17 @@ config:
     - -Dexodus.env.compactOnOpen=true
     - -Dexodus.entityStore.refactoring.missedLinks=true
     - -Dexodus.gc.utilization.fromScratch=true
+    - -Dexodus.entityStore.refactoring.heavyLinks=true
+    - -Dexodus.gc.filesDeletionDelay=21000
 ```
 
 Important:
 - Take a fresh backup before running recovery flags.
 - Plan downtime: `compactOnOpen` can keep YouTrack offline for a long time during startup.
 - Ensure enough free space on `/opt/youtrack/data` (roughly at least current DB size) for compaction temp data.
+- `-Dexodus.entityStore.refactoring.heavyLinks=true` ran a one-time link refactoring and has no further effect.
+- `-Dexodus.gc.utilization.fromScratch=true` forced the GC to recalculate its estimates from scratch after the heavy import period caused the estimates to drift. Now that the GC is working with accurate figures, it is no longer needed.
+- `-Dexodus.gc.filesDeletionDelay=21000` is a safety measure during cleanup.
 - Remove the recovery flags after one successful restart, then restart normally again.
 - If `.del` files remain afterwards, delete them only while YouTrack is stopped and only after a fresh backup.
 

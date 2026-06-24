@@ -1,7 +1,7 @@
 image:
   repository: jetbrains/youtrack
   pullPolicy: Always
-  tag: 2026.1.13757
+  tag: 2026.2.16593
 
 # Secrets for pulling images from a private container registry
 imagePullSecrets: []
@@ -166,6 +166,8 @@ config:
 #    - -Dexodus.entityStore.refactoring.missedLinks=true
 #    - -Dexodus.gc.utilization.fromScratch=true
 #    - -Dexodus.gc.transactionTimeout=5000
+#    - -Dexodus.gc.filesDeletionDelay=21000
+#    - -Dexodus.entityStore.refactoring.heavyLinks=true
 #    - -Dfile.encoding=UTF-8
 #    - -Djava.awt.headless=false
 #    - -ea
