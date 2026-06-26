@@ -19,8 +19,16 @@ data:
     {{- end }}
     {{- end }}
     -Dbase-url={{ $baseUrl }}
+    {{- if .Values.metrics.enable }}
+    -javaagent:/opt/youtrack/conf/jmx_prometheus_javaagent.jar=9404:/opt/youtrack/conf/jmx_exporter.yaml
+    {{- end }}
     {{- range $option := .Values.config.options }}
     {{- if $option }}
     {{ $option }}
     {{- end }}
     {{- end }}
+  {{- if .Values.metrics.enable }}
+  jmx_exporter.yaml: |-
+    ---
+    {{ .Values.metrics.config | toYaml | nindent 6 }}
+  {{- end }}

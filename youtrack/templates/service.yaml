@@ -13,3 +13,19 @@ spec:
       protocol: {{ .Values.service.protocol }}
       name: {{ .Values.service.name }}
 {{- end }}
+{{- if and .Values.metrics.enable .Values.metrics.service.enable }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.metrics.service.name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}
+  ports:
+    - port: {{ .Values.metrics.service.port }}
+      targetPort: 9404
+      protocol: TCP
+      name: jmx-exporter
+{{- end }}

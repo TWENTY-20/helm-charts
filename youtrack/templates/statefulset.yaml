@@ -79,15 +79,27 @@ spec:
             {{- end }}
           resources:
             {{- toYaml .Values.initContainerResources | nindent 12 }}
-          {{- if eq .Values.config.mountStrategy "copy" }}
           command: ["/bin/sh", "-c"]
           args:
             - |
-              cp /tmp/youtrack-config/youtrack.jvmoptions /opt/youtrack/conf/youtrack.jvmoptions
-              /opt/youtrack/bin/youtrack.sh configure "--base-url={{ .Values.config.baseUrl }}" "--listen-port={{ .Values.service.port }}"
-          {{- else }}
-          args: ["configure", "--base-url={{ .Values.config.baseUrl }}", "--listen-port={{ .Values.service.port }}"]
-          {{- end }}
+              {{- if eq .Values.config.mountStrategy "copy" }}
+              cp /tmp/youtrack-config/youtrack.jvmoptions /opt/youtrack/conf/youtrack.jvmoptions || exit 1
+              {{- end }}
+
+              {{- if .Values.metrics.enable }}
+              cp /tmp/youtrack-config/jmx_exporter.yaml /opt/youtrack/conf/jmx_exporter.yaml || exit 1
+              if ! [ -f /opt/youtrack/conf/.exporter-version ] || [ "$(cat /opt/youtrack/conf/.exporter-version)" != "{{ .Values.metrics.exporterVersion }}" ]; then
+                echo "* Updating JMX exporter"
+                curl -L \
+                  -o /opt/youtrack/conf/jmx_prometheus_javaagent.jar \
+                  https://github.com/prometheus/jmx_exporter/releases/download/v{{ .Values.metrics.exporterVersion }}/jmx_prometheus_javaagent-{{ .Values.metrics.exporterVersion }}.jar \
+                  && echo "{{ .Values.metrics.exporterVersion }}" >/opt/youtrack/conf/.exporter-version
+              else
+                echo "* JMX exporter is up-to-date"
+              fi
+              {{- end }}
+              
+              /opt/youtrack/bin/youtrack.sh configure --base-url="{{ .Values.config.baseUrl }}" --listen-port="{{ .Values.service.port }}" {{ if .Values.metrics.enable }}-J-javaagent:/opt/youtrack/conf/jmx_prometheus_javaagent.jar=9404:/opt/youtrack/conf/jmx_exporter.yaml{{ end }}
       containers:
         - name: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}
           securityContext:
@@ -117,6 +129,11 @@ spec:
             - name: {{ .Values.config.name }}
               mountPath: /opt/youtrack/conf/youtrack.jvmoptions
               subPath: youtrack.jvmoptions
+            {{- if .Values.metrics.enable }}
+            - name: {{ .Values.config.name }}
+              mountPath: /opt/youtrack/conf/jmx_exporter.yaml
+              subPath: jmx_exporter.yaml
+            {{- end }}
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

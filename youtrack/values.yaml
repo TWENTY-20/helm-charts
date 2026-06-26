@@ -240,6 +240,112 @@ sidecars:
   containers: []
   volumes: []
 
+metrics:
+  enable: false
+  exporterVersion: 1.6.0
+  service:
+    enable: true
+    name: metrics
+    port: 9404
+  config:
+    startDelaySeconds: 10
+    lowercaseOutputName: false
+    lowercaseOutputLabelNames: false
+
+    whitelistObjectNames:
+    # JVM
+    - "java.lang:type=Runtime"
+    - "java.lang:type=OperatingSystem"
+    # Xodus
+    - "jetbrains.exodus.env: type=EnvironmentConfig,*"
+    - "jetbrains.exodus.env: type=EnvironmentStatistics,*"
+    - "jetbrains.exodus.entitystore: type=EntityStoreStatistics,*"
+    # YouTrack
+    - "jetbrains.youtrack:type=*,name=UserSessions"
+    - "jetbrains.youtrack:type=*,name=HubIntegration"
+    - "jetbrains.youtrack:type=*,name=NotificationsSender"
+    - "jetbrains.youtrack:type=*,name=JobProcessorsTelemetry"
+    - "jetbrains.youtrack:type=*,name=ZendeskIntegration"
+    - "jetbrains.youtrack:type=*,name=SemanticSearchMetrics"
+    - "jetbrains.youtrack:type=*,name=GrazieIntegration"
+    - "jetbrains.youtrack:type=JobProcessor,*"
+    - "jetbrains.youtrack:type=JobThreadPool,*"
+    - "jetbrains.youtrack:type=Workflow,*"
+    - "jetbrains.youtrack:type=TextIndex,*"
+    - "jetbrains.youtrack:type=Maintenance,name=Global"
+
+    rules:
+    - pattern: 'java.lang<type=Runtime><>Uptime:'
+      name: process_uptime
+      help: Total time elapsed since process start in milliseconds
+      type: COUNTER
+
+    - pattern: 'java.lang<type=OperatingSystem><>ProcessCpuLoad:'
+      name: process_cpu_load
+      help: Current process cpu usage share
+      type: GAUGE
+
+    - pattern: 'jetbrains.exodus.env< type=EnvironmentConfig,  location=(.*)><>(EnvIsReadonly|GcEnabled|GcMinUtilization):'
+      name: youtrack_$2
+      labels:
+          path: $1
+      help: Xodus environment state
+
+    - pattern: 'jetbrains.exodus.env< type=EnvironmentStatistics,  location=(.*)><>(\w+):'
+      name: youtrack_$2
+      labels:
+          path: $1
+      help: Xodus environment metrics
+
+    - pattern: 'jetbrains.exodus.entitystore< type=EntityStoreStatistics,  location=(.*),  name=teamsysstore><>(\w+):'
+      name: youtrack_$2
+      labels:
+          path: $1
+      help: Xodus entity store metrics
+
+    - pattern: 'jetbrains.youtrack<type=Maintenance, name=Global><>(\w+): ([\.\w]+)'
+      name: youtrack_version_info
+      labels:
+          $1: $2
+      value: 1.0
+      type: GAUGE
+      help: Application version info
+
+    # Background jobs metrics flatten out by type and attribute, name as label
+    - pattern: 'jetbrains.youtrack<type=(JobProcessor|JobThreadPool), name=(\w+)><>(\w+):'
+      name: youtrack_$1_$3
+      labels:
+        name: $2
+
+    - pattern: 'jetbrains.youtrack<type=Workflow, name=(\w+), script=([\w_\-\/@]+)><>(TotalDuration): ([0-9][0-9][0-9][0-9].*)'
+      name: youtrack_Workflow_$1_$3
+      help: Workflow JS metrics
+      labels:
+        script: $2
+      value: $4
+
+    - pattern: 'jetbrains.youtrack<type=Workflow, name=(\w+), script=([\w_\-\/@]+)><>(TotalCount): ([0-9][0-9].*)'
+      name: youtrack_Workflow_$1_$3
+      help: Workflow JS metrics
+      labels:
+        script: $2
+      value: $4
+
+    - pattern: 'jetbrains.youtrack<type=Workflow, name=(\w+), script=([\w_\-\/@]+)><>(FailedCount): ([1-9].*)'
+      name: youtrack_Workflow_$1_$3
+      help: Workflow JS metrics
+      labels:
+        script: $2
+      value: $4
+
+    - pattern: 'jetbrains.youtrack<type=TextIndex, name=\w+><>(\w+):'
+      name: youtrack_TextIndex_$1
+      help: Text index metrics
+
+    # Generic pattern
+    - pattern: 'jetbrains.youtrack<type=\w+, name=(\w+)><>(\w+):'
+      name: youtrack_$1_$2
+
 # Optional: Override names and configure pod scheduling preferences
 nameOverride: ""
 fullnameOverride: ""
