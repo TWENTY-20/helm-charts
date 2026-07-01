@@ -1,0 +1,27 @@
+{{- define "youtrack.metricsConfig" -}}
+{{- $jmxExporter := .Values.metrics.jmxExporter | default dict -}}
+{{- $config := $jmxExporter.config | required "metrics.jmxExporter.config must not be empty when metrics.enabled=true" -}}
+{{- if kindIs "string" $config }}
+{{- $config | trim }}
+{{- else }}
+{{- toYaml $config | trim }}
+{{- end }}
+{{- end }}
+
+{{- define "youtrack.metricsConfigChecksum" -}}
+{{ include "youtrack.metricsConfig" . }}
+{{ include "youtrack.metricsLoggingConfig" . }}
+{{- end }}
+
+{{- if .Values.metrics.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-metrics" .Values.config.name }}
+  namespace: {{ .Release.Namespace }}
+data:
+  jmx_exporter.yaml: |-
+{{ include "youtrack.metricsConfig" . | trim | indent 4 }}
+  jmx_logging.properties: |-
+{{ include "youtrack.metricsLoggingConfig" . | trim | indent 4 }}
+{{- end }}

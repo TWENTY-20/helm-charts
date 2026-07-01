@@ -19,6 +19,10 @@ data:
     {{- end }}
     {{- end }}
     -Dbase-url={{ $baseUrl }}
+    {{- if .Values.metrics.enabled }}
+    -Djava.util.logging.config.file=/opt/youtrack/jmx-exporter/jmx_logging.properties
+    -javaagent:/opt/youtrack/jmx-exporter/jmx_prometheus_javaagent.jar={{ .Values.metrics.port }}:/opt/youtrack/jmx-exporter/jmx_exporter.yaml
+    {{- end }}
     {{- range $option := .Values.config.options }}
     {{- if $option }}
     {{ $option }}

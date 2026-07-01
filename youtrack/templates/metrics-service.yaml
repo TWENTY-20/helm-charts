@@ -1,0 +1,21 @@
+{{- if .Values.metrics.enabled }}
+{{- if and .Values.service.enabled (eq (toString .Values.service.name) "metrics") }}
+{{- fail "service.name must be different from metrics service name \"metrics\" when metrics.enabled=true." }}
+{{- end }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: metrics
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}
+    app.kubernetes.io/component: metrics
+spec:
+  selector:
+    app: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}
+  ports:
+    - port: {{ .Values.metrics.port }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
+{{- end }}

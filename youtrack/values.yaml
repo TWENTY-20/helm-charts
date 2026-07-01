@@ -247,3 +247,126 @@ podAnnotations: {}
 nodeSelector: {}
 tolerations: []
 affinity: {}
+
+metrics:
+  enabled: false
+  port: 9404
+  jarUrl: https://github.com/prometheus/jmx_exporter/releases/download/v1.6.0/jmx_prometheus_javaagent-1.6.0.jar
+  jmxExporter:
+    # Rendered as jmx_exporter.yaml in the metrics ConfigMap.
+    # Override this block to customize exported JMX metrics.
+    config: |-
+      # Give YouTrack time to start registering JMX MBeans before the first scrape.
+      startDelaySeconds: 10
+
+      # Keep metric and label names aligned with the explicit rule names below.
+      lowercaseOutputName: false
+      lowercaseOutputLabelNames: false
+
+      # Limit scraping to known JVM, Xodus and YouTrack MBeans to avoid noisy output.
+      whitelistObjectNames:
+        # JVM process metrics.
+        - "java.lang:type=Runtime"
+        - "java.lang:type=OperatingSystem"
+
+        # Xodus database metrics used by YouTrack storage.
+        - "jetbrains.exodus.env: type=EnvironmentConfig,*"
+        - "jetbrains.exodus.env: type=EnvironmentStatistics,*"
+        - "jetbrains.exodus.entitystore: type=EntityStoreStatistics,*"
+
+        # YouTrack application and integration metrics.
+        - "jetbrains.youtrack:type=*,name=UserSessions"
+        - "jetbrains.youtrack:type=*,name=HubIntegration"
+        - "jetbrains.youtrack:type=*,name=NotificationsSender"
+        - "jetbrains.youtrack:type=*,name=JobProcessorsTelemetry"
+        - "jetbrains.youtrack:type=*,name=ZendeskIntegration"
+        - "jetbrains.youtrack:type=*,name=SemanticSearchMetrics"
+        - "jetbrains.youtrack:type=*,name=GrazieIntegration"
+        - "jetbrains.youtrack:type=JobProcessor,*"
+        - "jetbrains.youtrack:type=JobThreadPool,*"
+        - "jetbrains.youtrack:type=Workflow,*"
+        - "jetbrains.youtrack:type=TextIndex,*"
+        - "jetbrains.youtrack:type=Maintenance,name=Global"
+
+      # Rules convert selected JMX attributes into Prometheus metrics.
+      rules:
+        # JVM runtime and CPU metrics.
+        - pattern: 'java.lang<type=Runtime><>Uptime:'
+          name: process_uptime
+          help: Total time elapsed since process start in milliseconds
+          type: COUNTER
+        - pattern: 'java.lang<type=OperatingSystem><>ProcessCpuLoad:'
+          name: process_cpu_load
+          help: Current process cpu usage share
+          type: GAUGE
+
+        # Xodus database state and counters, labelled by storage path.
+        - pattern: 'jetbrains.exodus.env< type=EnvironmentConfig,  location=(.*)><>(EnvIsReadonly|GcEnabled|GcMinUtilization):'
+          name: youtrack_$2
+          labels:
+            path: $1
+          help: Xodus environment state
+        - pattern: 'jetbrains.exodus.env< type=EnvironmentStatistics,  location=(.*)><>(\w+):'
+          name: youtrack_$2
+          labels:
+            path: $1
+          help: Xodus environment metrics
+        - pattern: 'jetbrains.exodus.entitystore< type=EntityStoreStatistics,  location=(.*),  name=teamsysstore><>(\w+):'
+          name: youtrack_$2
+          labels:
+            path: $1
+          help: Xodus entity store metrics
+
+        # Expose YouTrack version fields as labels on a constant info metric.
+        - pattern: 'jetbrains.youtrack<type=Maintenance, name=Global><>(\w+): ([\.\w]+)'
+          name: youtrack_version_info
+          labels:
+            $1: $2
+          value: 1.0
+          type: GAUGE
+          help: Application version info
+
+        # Job processor and thread pool metrics, labelled by processor or pool name.
+        - pattern: 'jetbrains.youtrack<type=(JobProcessor|JobThreadPool), name=(\w+)><>(\w+):'
+          name: youtrack_$1_$3
+          labels:
+            name: $2
+
+        # Workflow metrics. Thresholds avoid exporting low-value zero or tiny counters.
+        - pattern: 'jetbrains.youtrack<type=Workflow, name=(\w+), script=([\w_\-\/@]+)><>(TotalDuration): ([0-9][0-9][0-9][0-9].*)'
+          name: youtrack_Workflow_$1_$3
+          help: Workflow JS metrics
+          labels:
+            script: $2
+          value: $4
+        - pattern: 'jetbrains.youtrack<type=Workflow, name=(\w+), script=([\w_\-\/@]+)><>(TotalCount): ([0-9][0-9].*)'
+          name: youtrack_Workflow_$1_$3
+          help: Workflow JS metrics
+          labels:
+            script: $2
+          value: $4
+        - pattern: 'jetbrains.youtrack<type=Workflow, name=(\w+), script=([\w_\-\/@]+)><>(FailedCount): ([1-9].*)'
+          name: youtrack_Workflow_$1_$3
+          help: Workflow JS metrics
+          labels:
+            script: $2
+          value: $4
+
+        # Text index metrics.
+        - pattern: 'jetbrains.youtrack<type=TextIndex, name=\w+><>(\w+):'
+          name: youtrack_TextIndex_$1
+          help: Text index metrics
+
+        # Generic fallback for remaining whitelisted YouTrack metrics.
+        - pattern: 'jetbrains.youtrack<type=\w+, name=(\w+)><>(\w+):'
+          name: youtrack_$1_$2
+  serviceMonitor:
+    enabled: false
+    # Extra labels for the ServiceMonitor object.
+    # Set labels here if your Prometheus selects ServiceMonitors by label.
+    # Example for many kube-prometheus-stack installations:
+    # labels:
+    #   release: kube-prometheus-stack
+    labels: {}
+    interval: 30s
+    scrapeTimeout: 10s

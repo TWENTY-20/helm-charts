@@ -14,6 +14,9 @@ spec:
         app: {{ .Values.nameOverride | default .Release.Name }}
       annotations:
         checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if .Values.metrics.enabled }}
+        checksum/metrics-configmap: {{ include "youtrack.metricsConfigChecksum" . | sha256sum }}
+        {{- end }}
         {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -45,6 +48,13 @@ spec:
             sources:
               - configMap:
                   name: {{ .Values.config.name }}
+        {{- if .Values.metrics.enabled }}
+        - name: metrics-config
+          configMap:
+            name: {{ printf "%s-metrics" .Values.config.name }}
+        - name: jmx-exporter-agent
+          emptyDir: {}
+        {{- end }}
         {{- with .Values.sidecars.volumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -77,28 +87,36 @@ spec:
             - name: {{ .Values.config.name }}
               mountPath: /tmp/youtrack-config
             {{- end }}
+            {{- if .Values.metrics.enabled }}
+            - name: metrics-config
+              mountPath: /jmx-exporter-config
+            - name: jmx-exporter-agent
+              mountPath: /jmx-exporter
+            {{- end }}
           resources:
             {{- toYaml .Values.initContainerResources | nindent 12 }}
-          {{- if eq .Values.config.mountStrategy "copy" }}
-          command: ["/bin/sh", "-c"]
+          command: ["/bin/sh", "-ec"]
           args:
             - |
-              cp /tmp/youtrack-config/youtrack.jvmoptions /opt/youtrack/conf/youtrack.jvmoptions
-              /opt/youtrack/bin/youtrack.sh configure "--base-url={{ .Values.config.baseUrl }}" "--listen-port={{ .Values.service.port }}"
-          {{- else }}
-          args: ["configure", "--base-url={{ .Values.config.baseUrl }}", "--listen-port={{ .Values.service.port }}"]
-          {{- end }}
+{{ include "youtrack.initContainerScript" . | trim | indent 14 }}
       containers:
         - name: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- if .Values.service.enabled }}
+          {{- if or .Values.service.enabled .Values.metrics.enabled }}
           ports:
+            {{- if .Values.service.enabled }}
             - containerPort: {{ .Values.service.port }}
               name: {{ .Values.service.name }}
               protocol: {{ .Values.service.protocol }}
+            {{- end }}
+            {{- if .Values.metrics.enabled }}
+            - containerPort: {{ .Values.metrics.port }}
+              name: metrics
+              protocol: TCP
+            {{- end }}
           {{- end }}
           volumeMounts:
             - name: {{ .Values.persistence.data.name }}
@@ -117,6 +135,10 @@ spec:
             - name: {{ .Values.config.name }}
               mountPath: /opt/youtrack/conf/youtrack.jvmoptions
               subPath: youtrack.jvmoptions
+            {{- end }}
+            {{- if .Values.metrics.enabled }}
+            - name: jmx-exporter-agent
+              mountPath: /opt/youtrack/jmx-exporter
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

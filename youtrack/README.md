@@ -30,6 +30,7 @@ Please follow the migration guide: [MIGRATION-2.x-to-3.0.0.md](https://github.co
 - Easy whitelisting of Traefik & Cert-Manager for NetworkPolicy deny-all setups
 - IP-based access restriction support
 - Possibility to set securityContext and resource limits
+- Optional Prometheus metrics via JMX Exporter
 - Optional pod host aliases via `values.yaml`
 - Optional sidecar containers and additional pod volumes via `values.yaml`
 - Highly customizable via `values.yaml`
@@ -116,6 +117,57 @@ config:
 - `copy`: init container mounts ConfigMap at `/tmp/youtrack-config` and copies the file into `/opt/youtrack/conf`.
 
 The chart adds a ConfigMap checksum annotation to the StatefulSet pod template, so changes in `config.options` trigger an automatic rolling restart.
+
+#### <span style="color:yellow;">Prometheus Metrics via JMX Exporter (Optional)</span>
+Enable `metrics.enabled` to expose Prometheus metrics from YouTrack via the JMX Exporter Java agent.
+
+```yaml
+metrics:
+  enabled: true
+  port: 9404
+```
+
+When enabled, the chart:
+- creates a metrics ConfigMap with `jmx_exporter.yaml`
+- downloads the JMX Exporter Java agent in the init container from `metrics.jarUrl`
+- mounts the agent and config into the main YouTrack container
+- exposes a `metrics` container port and `metrics` Kubernetes Service
+
+The default JMX Exporter rules are defined in `values.yaml` under `metrics.jmxExporter.config`.
+Override this block to customize exported metrics:
+
+```yaml
+metrics:
+  enabled: true
+  jmxExporter:
+    config: |-
+      startDelaySeconds: 10
+      rules:
+        - pattern: 'java.lang<type=Runtime><>Uptime:'
+          name: process_uptime
+```
+
+`metrics.serviceMonitor.enabled` optionally creates a Prometheus Operator `ServiceMonitor`:
+
+```yaml
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+```
+
+Only enable `serviceMonitor.enabled` when the `monitoring.coreos.com/v1` `ServiceMonitor` CRD is installed in the cluster. Metrics still work without a `ServiceMonitor`; Prometheus can also scrape the generated `metrics` Service by other means.
+
+If Prometheus selects `ServiceMonitor` objects by label, set matching labels with `metrics.serviceMonitor.labels`:
+
+```yaml
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    labels:
+      release: kube-prometheus-stack
+```
 
 #### <span style="color:yellow;">Database Cleanup (One-Time Recovery)</span>
 If backup size grows quickly and logs contain `GC is disabled on database`, use Xodus recovery flags only as a temporary maintenance action.
