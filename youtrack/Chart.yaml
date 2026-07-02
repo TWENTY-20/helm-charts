@@ -3,8 +3,8 @@ name: youtrack
 description: A Helm chart for deploying Youtrack on Kubernetes
 type: application
 icon: https://raw.githubusercontent.com/TWENTY-20/helm-charts/main/youtrack/icon.png
-version: 3.7.0
-appVersion: "2026.2.16593"
+version: 3.7.1
+appVersion: "2026.2.17012"
 
 keywords:
   - youtrack
