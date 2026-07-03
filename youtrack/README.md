@@ -133,6 +133,8 @@ When enabled, the chart:
 - mounts the agent and config into the main YouTrack container
 - exposes a `metrics` container port and `metrics` Kubernetes Service
 
+A compatible Grafana dashboard is available as [JMX Exporter](https://grafana.com/grafana/dashboards/25479-jmx-exporter/) dashboard ID `25479`.
+
 The default JMX Exporter rules are defined in `values.yaml` under `metrics.jmxExporter.config`.
 Override this block to customize exported metrics:
 
