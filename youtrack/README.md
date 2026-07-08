@@ -20,6 +20,11 @@ If you are upgrading from `2.x`, migration steps are required.
 
 Please follow the migration guide: [MIGRATION-2.x-to-3.0.0.md](https://github.com/TWENTY-20/helm-charts/blob/main/youtrack/MIGRATION-2.x-to-3.0.0.md)
 
+## ⚠️ Breaking Changes (4.0.0)
+If you are upgrading from `3.x`, migration steps are required.
+
+Please follow the migration guide: [MIGRATION-3.x-to-4.0.0.md](https://github.com/TWENTY-20/helm-charts/blob/main/youtrack/MIGRATION-3.x-to-4.0.0.md)
+
 ---
 ## ✨ Features
 - Runs the official YouTrack [Docker image](https://hub.docker.com/r/jetbrains/youtrack)
@@ -52,7 +57,7 @@ config:
   baseUrl: "http://127.0.0.1:8080"
 ```
 For production/external access, set your real public URL instead (for example `https://youtrack.example.com`).
-If you keep the local default, set `ingress.enabled: false` and use port-forward access.
+Ingress is disabled by default. If you keep the local default, use port-forward access.
 ```yaml
 config:
   baseUrl: "http://127.0.0.1:8080"
@@ -284,25 +289,51 @@ ipWhitelist:
 If ipWhitelist.enabled is true, update your ingress annotations to include the whitelist middleware:
 ```traefik.ingress.kubernetes.io/router.middlewares: ip-whitelist@kubernetescrd```
 ---
-#### <span style="color:yellow;">Ingress Config Mode</span>
-Ingress supports two modes:
+#### <span style="color:yellow;">Ingress Configuration</span>
+Ingress uses explicit `ingress.hosts` and optional `ingress.tls` values.
 
-- `auto` (default): keeps the current behavior and derives host/TLS host from `config.baseUrl`.
-- `manual`: uses explicit `ingress.hosts`, `ingress.tls`, and optional `ingress.ingressClassName`.
-- In `manual` mode, annotations are fully user-managed. Make sure your annotations match the selected controller/class.
+- Ingress is disabled by default. Set `ingress.enabled=true` after replacing the example host and TLS values.
+- Set `ingress.hosts` to configure hosts and paths. This is required when `ingress.enabled=true`.
+- Example values such as `youtrack.example.com` and `youtrack-letsencrypt-cert` are rejected when `ingress.enabled=true`.
+- Leave `ingress.tls` empty to render an HTTP-only Ingress.
+- Set `ingress.tls` to reference an existing TLS Secret or configure custom TLS hosts.
+- `ingress.annotations` is fully user-managed. The chart does not add Traefik, ACME or cert-manager annotations automatically.
 
-Default (`auto`):
+Traefik and cert-manager:
 ```yaml
 ingress:
   enabled: true
-  configMode: auto
+  ingressClassName: traefik
+  annotations:
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: youtrack.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: youtrack-letsencrypt-cert
+      hosts:
+        - youtrack.example.com
 ```
 
-Manual:
+HTTP-only Ingress:
 ```yaml
 ingress:
   enabled: true
-  configMode: manual
+  ingressClassName: traefik
+  hosts:
+    - host: youtrack.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+```
+
+Ingress with TLS:
+```yaml
+ingress:
+  enabled: true
   ingressClassName: traefik
   hosts:
     - host: youtrack.example.com
@@ -311,6 +342,25 @@ ingress:
           pathType: Prefix
   tls:
     - secretName: youtrack-letsencrypt-cert
+      hosts:
+        - youtrack.example.com
+```
+
+Existing TLS Secret:
+```yaml
+ingress:
+  enabled: true
+  name: youtrack
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: traefik-internal-https-redirect@kubernetescrd
+  ingressClassName: traefik-internal
+  hosts:
+    - host: youtrack.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: tls-secret
       hosts:
         - youtrack.example.com
 ```
