@@ -292,9 +292,9 @@ If ipWhitelist.enabled is true, update your ingress annotations to include the w
 #### <span style="color:yellow;">Ingress Configuration</span>
 Ingress uses explicit `ingress.hosts` and optional `ingress.tls` values.
 
-- Ingress is disabled by default. Set `ingress.enabled=true` after replacing the example host and TLS values.
+- Ingress is disabled by default. Set `ingress.enabled=true` after replacing the example host values.
 - Set `ingress.hosts` to configure hosts and paths. This is required when `ingress.enabled=true`.
-- Example values such as `youtrack.example.com` and `youtrack-letsencrypt-cert` are rejected when `ingress.enabled=true`.
+- Example hosts such as `youtrack.example.com` are rejected when `ingress.enabled=true`.
 - Leave `ingress.tls` empty to render an HTTP-only Ingress.
 - Set `ingress.tls` to reference an existing TLS Secret or configure custom TLS hosts.
 - `ingress.annotations` is fully user-managed. The chart does not add Traefik, ACME or cert-manager annotations automatically.

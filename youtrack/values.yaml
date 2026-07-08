@@ -1,7 +1,7 @@
 image:
   repository: jetbrains/youtrack
   pullPolicy: Always
-  tag: 2026.2.17012
+  tag: 2026.2.17394
 
 # Secrets for pulling images from a private container registry
 imagePullSecrets: []
@@ -190,8 +190,8 @@ service:
 
 # Ingress definition
 ingress:
-  # Replace the example host and TLS secret before setting enabled=true.
-  # Rendering fails when example values are still configured.
+  # Replace the example host before setting enabled=true.
+  # Rendering fails when example hosts are still configured.
   enabled: false
   name: youtrack-ingress
   annotations: {}

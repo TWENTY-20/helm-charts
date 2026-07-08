@@ -8,7 +8,7 @@ The chart no longer adds Traefik, ACME or cert-manager annotations automatically
 `ingress.configMode` was removed.
 `ingress.enabled` is now `false` by default.
 `ingress.hosts` is now required when `ingress.enabled=true`.
-Example values such as `youtrack.example.com` and `youtrack-letsencrypt-cert` are rejected when `ingress.enabled=true`.
+Example hosts such as `youtrack.example.com` are rejected when `ingress.enabled=true`.
 
 Before `4.0.0`, these annotations were part of the default values:
 
@@ -30,7 +30,7 @@ ingress:
 Remove `ingress.configMode` from your values.
 Set `ingress.enabled=true` if you want the chart to render an Ingress.
 Set `ingress.hosts` explicitly, or set `ingress.enabled=false` if you only use port-forward/local access.
-Replace all example host and TLS secret values before enabling Ingress.
+Replace all example host values before enabling Ingress.
 
 ## What You Need To Do
 

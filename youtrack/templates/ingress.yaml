@@ -54,9 +54,6 @@ spec:
     {{- if not $tls.secretName }}
     {{- fail "each ingress.tls entry needs secretName" }}
     {{- end }}
-    {{- if eq $tls.secretName "youtrack-letsencrypt-cert" }}
-    {{- fail "ingress.tls contains example secretName \"youtrack-letsencrypt-cert\"; replace it with your real TLS secret name before enabling ingress" }}
-    {{- end }}
     - secretName: {{ $tls.secretName }}
       {{- $tlsHosts := default (list) $tls.hosts }}
       {{- if gt (len $tlsHosts) 0 }}
