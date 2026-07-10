@@ -1,7 +1,7 @@
 image:
   repository: jetbrains/youtrack
   pullPolicy: Always
-  tag: 2026.2.17394
+  tag: 2026.2.17548
 
 # Secrets for pulling images from a private container registry
 imagePullSecrets: []
@@ -231,6 +231,10 @@ hostAliases: []
 # - ip: "192.0.2.10"
 #   hostnames:
 #     - "jira.avat.local"
+
+# Optional init containers prepended before the chart-managed YouTrack init container.
+# Keep array empty to disable.
+extraInitContainers: []
 
 # Optional sidecar containers and pod volumes.
 # Keep arrays empty to disable.

@@ -37,6 +37,7 @@ Please follow the migration guide: [MIGRATION-3.x-to-4.0.0.md](https://github.co
 - Possibility to set securityContext and resource limits
 - Optional Prometheus metrics via JMX Exporter
 - Optional pod host aliases via `values.yaml`
+- Optional custom init containers via `values.yaml`
 - Optional sidecar containers and additional pod volumes via `values.yaml`
 - Highly customizable via `values.yaml`
 
@@ -210,6 +211,29 @@ config:
 ```
 
 Value is in milliseconds. Increase only when needed.
+
+---
+
+#### <span style="color:yellow;">Extra Init Containers (Optional)</span>
+You can run one or more custom init containers before the chart-managed YouTrack init container via `values.yaml`.
+
+```yaml
+extraInitContainers:
+  - name: prepare-custom-files
+    image: busybox:1.36
+    command: ["/bin/sh", "-ec"]
+    args:
+      - |
+        echo "prepare files"
+    volumeMounts:
+      - name: youtrack-data
+        mountPath: /opt/youtrack/data
+```
+
+Important:
+- `extraInitContainers` accepts complete Kubernetes container specs.
+- Containers are rendered before the chart-managed YouTrack init container.
+- Additional pod volumes can be added with `sidecars.volumes` when needed.
 
 ---
 
