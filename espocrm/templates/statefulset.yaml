@@ -31,6 +31,26 @@ spec:
           configMap:
             name: {{ .Values.nginx.config.configMapName }}
 
+      initContainers:
+        - name: copy-web-content
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          command:
+            - sh
+            - -ec
+            - |
+              cp -a /usr/src/espocrm/public/. /var/www/html/public/
+              cp -a /usr/src/espocrm/client/. /var/www/html/client/
+          resources:
+            {{- toYaml .Values.espocrm.resources | nindent 12 }}
+          volumeMounts:
+            - name: espocrm-public
+              mountPath: /var/www/html/public
+            - name: espocrm-client
+              mountPath: /var/www/html/client
+
       containers:
         # espocrm
         - name: {{ .Values.espocrm.name }}
@@ -55,7 +75,6 @@ spec:
           resources:
             {{- toYaml .Values.espocrm.resources | nindent 12 }}
           volumeMounts:
-            # The EspoCRM FPM entrypoint populates these mounts for the Nginx sidecar.
             - name: espocrm-public
               mountPath: /var/www/html/public
             - name: espocrm-client
