@@ -2,7 +2,7 @@ image:
   # Image repository for EspoCRM
   repository: espocrm/espocrm
   pullPolicy: Always
-  tag: "9.3.9-fpm-alpine"
+  tag: "10.0.2-fpm-alpine"
 
 # Secret(s) for pulling images from a private container registry. Leave empty if not needed.
 imagePullSecrets: []
@@ -43,7 +43,9 @@ securityContext:
   seccompProfile:
       type: RuntimeDefault
 
-# PVC is required to persist and share application data across containers in the pod.
+# PVC is required to persist EspoCRM data and customizations.
+# Starting with EspoCRM 10, the chart does not mount the whole /var/www/html directory.
+# It mounts only data, custom and client/custom from this PVC.
 persistence:
   # If false, data will not be persisted.
   enabled: true

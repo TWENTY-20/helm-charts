@@ -20,6 +20,20 @@ Source: [EspoCRM's official website](https://www.espocrm.com)
 
 Please refer to the `values.yaml` file for a complete reference of all available configuration parameters.
 
+### EspoCRM 10 storage layout
+Upgrading from chart `1.x` to `2.x` includes persistent mount layout changes. The application image provides the EspoCRM code at `/var/www/html`; the persistent volume is mounted only for data and customizations:
+
+- `/var/www/html/data`
+- `/var/www/html/custom`
+- `/var/www/html/client/custom`
+
+ Before upgrading:
+1. Back up the database and the existing EspoCRM PVC.
+2. Verify that the PVC contains the existing `data`, `custom` and `client/custom` directories.
+3. Check customizations and extensions for EspoCRM 10 compatibility.
+
+Files stored outside `data`, `custom` and `client/custom` are no longer used by the application after the upgrade.
+
 ### Database
 
 - This chart does **not** deploy a database.

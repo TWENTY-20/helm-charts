@@ -23,6 +23,10 @@ spec:
         - name: {{ .Values.persistence.data.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.data.name }}
+        - name: espocrm-public
+          emptyDir: {}
+        - name: espocrm-client
+          emptyDir: {}
         - name: {{ .Values.nginx.config.configVolumeName }}
           configMap:
             name: {{ .Values.nginx.config.configMapName }}
@@ -51,8 +55,20 @@ spec:
           resources:
             {{- toYaml .Values.espocrm.resources | nindent 12 }}
           volumeMounts:
+            # The EspoCRM FPM entrypoint populates these mounts for the Nginx sidecar.
+            - name: espocrm-public
+              mountPath: /var/www/html/public
+            - name: espocrm-client
+              mountPath: /var/www/html/client
             - name: {{ .Values.persistence.data.name }}
-              mountPath: /var/www/html
+              mountPath: /var/www/html/data
+              subPath: data
+            - name: {{ .Values.persistence.data.name }}
+              mountPath: /var/www/html/custom
+              subPath: custom
+            - name: {{ .Values.persistence.data.name }}
+              mountPath: /var/www/html/client/custom
+              subPath: client/custom
           env:
             {{- range $key, $val := .Values.espocrm.settings }}
             {{- if or (not (kindIs "string" $val)) (ne $val "") }}          
@@ -105,8 +121,16 @@ spec:
           resources:
             {{- toYaml .Values.nginx.resources | nindent 12 }}
           volumeMounts:
+            - name: espocrm-public
+              mountPath: /var/www/html/public
+              readOnly: true
+            - name: espocrm-client
+              mountPath: /var/www/html/client
+              readOnly: true
             - name: {{ .Values.persistence.data.name }}
-              mountPath: /var/www/html
+              mountPath: /var/www/html/client/custom
+              subPath: client/custom
+              readOnly: true
             - name: {{ .Values.nginx.config.configVolumeName }}
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
@@ -134,7 +158,14 @@ spec:
           command: {{ toYaml .Values.daemon.entryPoint | nindent 12 }}
           volumeMounts:
             - name: {{ .Values.persistence.data.name }}
-              mountPath: /var/www/html
+              mountPath: /var/www/html/data
+              subPath: data
+            - name: {{ .Values.persistence.data.name }}
+              mountPath: /var/www/html/custom
+              subPath: custom
+            - name: {{ .Values.persistence.data.name }}
+              mountPath: /var/www/html/client/custom
+              subPath: client/custom
 
         # websocket
         - name: {{ .Values.websocket.name }}
@@ -159,7 +190,14 @@ spec:
           command: {{ toYaml .Values.websocket.entryPoint | nindent 12 }}
           volumeMounts:
             - name: {{ .Values.persistence.data.name }}
-              mountPath: /var/www/html
+              mountPath: /var/www/html/data
+              subPath: data
+            - name: {{ .Values.persistence.data.name }}
+              mountPath: /var/www/html/custom
+              subPath: custom
+            - name: {{ .Values.persistence.data.name }}
+              mountPath: /var/www/html/client/custom
+              subPath: client/custom
           env:
             {{- range $key, $val := .Values.websocket.config }}
             - name: ESPOCRM_CONFIG_{{ $key | upper | replace "." "_" }}
