@@ -31,6 +31,8 @@ Remove `ingress.configMode` from your values.
 Set `ingress.enabled=true` if you want the chart to render an Ingress.
 Set `ingress.hosts` explicitly, or set `ingress.enabled=false` if you only use port-forward/local access.
 Replace all example host values before enabling Ingress.
+Starting with `4.2.0`, `ingress.tls` entries may omit both `secretName` and `hosts`.
+Use this for clusters where the ingress controller provides a default or wildcard TLS certificate.
 
 ## What You Need To Do
 
@@ -66,6 +68,23 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
+```
+
+## Example: Internal Default/Wildcard TLS Certificate
+
+If your ingress controller provides TLS through a default or wildcard certificate, configure an empty TLS entry and omit `ingress.tls.hosts`:
+
+```yaml
+ingress:
+  enabled: true
+  ingressClassName: traefik-internal
+  hosts:
+    - host: youtrack.internal.example
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - {}
 ```
 
 ## Example: Existing TLS Secret

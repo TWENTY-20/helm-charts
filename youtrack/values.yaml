@@ -205,10 +205,9 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
-  tls:
-    - secretName: youtrack-letsencrypt-cert
-      hosts:
-        - youtrack.example.com
+  # Leave empty to render an HTTP-only Ingress.
+  # Use "- {}" when the ingress controller should use its default/wildcard TLS certificate.
+  tls: []
 
 # Use this to restrict access to YouTrack to specific IP addresses
 ipWhitelist:

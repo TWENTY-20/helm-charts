@@ -51,20 +51,28 @@ spec:
   {{- if gt (len $tlsEntries) 0 }}
   tls:
     {{- range $tls := $tlsEntries }}
-    {{- if not $tls.secretName }}
-    {{- fail "each ingress.tls entry needs secretName" }}
+    {{- $tlsHosts := default (list) $tls.hosts }}
+    {{- range $tlsHost := $tlsHosts }}
+    {{- if contains "example.com" $tlsHost }}
+    {{- fail (printf "ingress.tls.hosts contains example host %q; replace it with your real TLS hostname before enabling ingress" $tlsHost) }}
     {{- end }}
-    - secretName: {{ $tls.secretName }}
-      {{- $tlsHosts := default (list) $tls.hosts }}
+    {{- end }}
+    {{- if and (not $tls.secretName) (eq (len $tlsHosts) 0) }}
+    - {}
+    {{- else if $tls.secretName }}
+    - secretName: {{ $tls.secretName | quote }}
       {{- if gt (len $tlsHosts) 0 }}
       hosts:
         {{- range $tlsHost := $tlsHosts }}
-        {{- if contains "example.com" $tlsHost }}
-        {{- fail (printf "ingress.tls.hosts contains example host %q; replace it with your real TLS hostname before enabling ingress" $tlsHost) }}
-        {{- end }}
         - {{ $tlsHost | quote }}
         {{- end }}
       {{- end }}
+    {{- else }}
+    - hosts:
+        {{- range $tlsHost := $tlsHosts }}
+        - {{ $tlsHost | quote }}
+        {{- end }}
+    {{- end }}
     {{- end }}
   {{- end }}
 {{- end }}

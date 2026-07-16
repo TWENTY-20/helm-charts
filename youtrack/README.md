@@ -320,7 +320,8 @@ Ingress uses explicit `ingress.hosts` and optional `ingress.tls` values.
 - Set `ingress.hosts` to configure hosts and paths. This is required when `ingress.enabled=true`.
 - Example hosts such as `youtrack.example.com` are rejected when `ingress.enabled=true`.
 - Leave `ingress.tls` empty to render an HTTP-only Ingress.
-- Set `ingress.tls` to reference an existing TLS Secret or configure custom TLS hosts.
+- Set `ingress.tls` to reference an existing TLS Secret, configure custom TLS hosts, or render an empty TLS entry for clusters that provide a default/wildcard certificate.
+- `ingress.tls.hosts` is optional. Omit it when cluster policy forbids TLS hosts for internal domains.
 - `ingress.annotations` is fully user-managed. The chart does not add Traefik, ACME or cert-manager annotations automatically.
 
 Traefik and cert-manager:
@@ -352,6 +353,20 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
+```
+
+Internal wildcard/default TLS certificate:
+```yaml
+ingress:
+  enabled: true
+  ingressClassName: traefik-internal
+  hosts:
+    - host: youtrack.internal.example
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - {}
 ```
 
 Ingress with TLS:
