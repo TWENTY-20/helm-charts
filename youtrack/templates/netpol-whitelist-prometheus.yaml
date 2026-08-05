@@ -1,0 +1,22 @@
+{{- if .Values.networkPolicyWhitelist.prometheus.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-prometheus
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}{{ else }}{{ .Values.nameOverride | default .Release.Name }}{{ end }}
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: {{ .Values.networkPolicyWhitelist.prometheus.namespace }}
+          podSelector:
+            matchLabels:
+              {{- toYaml .Values.networkPolicyWhitelist.prometheus.podSelector | nindent 14 }}
+      ports:
+        - protocol: TCP
+          port: {{ .Values.metrics.port }}
+{{- end }}

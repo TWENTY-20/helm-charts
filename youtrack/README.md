@@ -32,7 +32,7 @@ Please follow the migration guide: [MIGRATION-3.x-to-4.0.0.md](https://github.co
 - Supports backup via volumeStorage or objectStorage (tested with T-Cloud Public and Azure)
 - Traefik compatible
 - Cert-Manager compatible
-- Easy whitelisting of Traefik & Cert-Manager for NetworkPolicy deny-all setups
+- Easy whitelisting of Traefik, Prometheus & Cert-Manager for NetworkPolicy deny-all setups
 - IP-based access restriction support
 - Possibility to set securityContext and resource limits
 - Optional Prometheus metrics via JMX Exporter
@@ -139,7 +139,7 @@ When enabled, the chart:
 - mounts the agent and config into the main YouTrack container
 - exposes a `metrics` container port and `metrics` Kubernetes Service
 
-A compatible Grafana dashboard is available as [JMX Exporter](https://grafana.com/grafana/dashboards/25479-jmx-exporter/) dashboard ID `25479`.
+A compatible dashboard for these metrics is available on Grafana Labs: [YouTrack Metrics (dashboard ID 25590)](https://grafana.com/grafana/dashboards/25590-youtrack-metrics/).
 
 The default JMX Exporter rules are defined in `values.yaml` under `metrics.jmxExporter.config`.
 Override this block to customize exported metrics:
@@ -291,7 +291,23 @@ networkPolicyWhitelist:
   traefik:
     enabled: true
 ```
+
+When Prometheus runs in a different namespace, enable metrics and whitelist its namespace and pod selector. The NetworkPolicy automatically uses `metrics.port`.
+
+```yaml
+metrics:
+  enabled: true
+
+networkPolicyWhitelist:
+  prometheus:
+    enabled: true
+    namespace: kube-prometheus-stack
+    podSelector:
+      app.kubernetes.io/name: prometheus
+```
+
 When using deny-all NetworkPolicy in your cluster & using Cert-Manager you can simply whitelist Cert-Manager via `values.yaml`
+
 ```yaml
 networkPolicyWhitelist:
   cert-manager:

@@ -1,7 +1,7 @@
 image:
   repository: jetbrains/youtrack
   pullPolicy: Always
-  tag: 2026.2.17765
+  tag: 2026.2.18194
 
 # Secrets for pulling images from a private container registry
 imagePullSecrets: []
@@ -216,10 +216,15 @@ ipWhitelist:
   sourceRange:
     - XXX.XXX.XXX.XXX/XX # specify your allowed IP's ranges here
 
-# Enable or disable whitelisting for Traefik and Cert-Manager components
+# Enable or disable whitelisting for Traefik, Prometheus and Cert-Manager components
 networkPolicyWhitelist:
   traefik:
     enabled: false
+  prometheus:
+    enabled: false
+    namespace: kube-prometheus-stack
+    podSelector:
+      app.kubernetes.io/name: prometheus
   cert-manager:
     enabled: false
     port: 8089
@@ -249,10 +254,12 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 
+# Grafana dashboard for these metrics (ID 25590):
+# https://grafana.com/grafana/dashboards/25590-youtrack-metrics/
 metrics:
   enabled: false
   port: 9404
-  jarUrl: https://github.com/prometheus/jmx_exporter/releases/download/v1.6.0/jmx_prometheus_javaagent-1.6.0.jar
+  jarUrl: https://github.com/prometheus/jmx_exporter/releases/download/1.6.0/jmx_prometheus_javaagent-1.6.0.jar
   jmxExporter:
     # Rendered as jmx_exporter.yaml in the metrics ConfigMap.
     # Override this block to customize exported JMX metrics.
