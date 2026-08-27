@@ -264,6 +264,30 @@ entries:
     version: 1.0.1
   espocrm:
   - apiVersion: v2
+    appVersion: 10.0.6
+    created: "2026-08-27T11:31:59.756571511Z"
+    description: A Helm chart for deploying EspoCRM on Kubernetes
+    digest: f52147be85750925607cc45d632d04bdc00a5345e48c8539b5c08dc1c248be74
+    home: https://www.espocrm.com
+    icon: https://raw.githubusercontent.com/TWENTY-20/helm-charts/main/espocrm/icon.png
+    keywords:
+    - espocrm
+    - espo
+    - crm
+    - helm
+    - kubernetes
+    maintainers:
+    - email: it-factory@twenty20.de
+      name: twenty20
+      url: https://twenty20.de
+    name: espocrm
+    sources:
+    - https://github.com/TWENTY-20/helm-charts/tree/main/espocrm
+    type: application
+    urls:
+    - https://github.com/TWENTY-20/helm-charts/releases/download/espocrm-2.0.4/espocrm-2.0.4.tgz
+    version: 2.0.4
+  - apiVersion: v2
     appVersion: 10.0.5
     created: "2026-08-19T14:34:46.527160505Z"
     description: A Helm chart for deploying EspoCRM on Kubernetes
@@ -1021,6 +1045,31 @@ entries:
     - https://twenty-20.github.io/helm-charts/espocrm-0.1.0.tgz
     version: 0.1.0
   youtrack:
+  - apiVersion: v2
+    appVersion: 2026.2.18687
+    created: "2026-08-27T11:31:59.946664843Z"
+    description: A Helm chart for deploying Youtrack on Kubernetes
+    digest: 6b57c8750fdf32d6453c279463938018636540109514e8b6e9a4cde40f9c52cd
+    home: https://twenty20.de
+    icon: https://raw.githubusercontent.com/TWENTY-20/helm-charts/main/youtrack/icon.png
+    keywords:
+    - youtrack
+    - yt
+    - jetbrains
+    - twenty20
+    - k8s
+    - kubernetes
+    maintainers:
+    - email: it-factory@twenty20.de
+      name: twenty20
+      url: https://twenty20.de
+    name: youtrack
+    sources:
+    - https://github.com/TWENTY-20/helm-charts/tree/main/youtrack
+    type: application
+    urls:
+    - https://github.com/TWENTY-20/helm-charts/releases/download/youtrack-4.3.2/youtrack-4.3.2.tgz
+    version: 4.3.2
   - apiVersion: v2
     appVersion: 2026.2.18695
     created: "2026-08-26T14:59:06.542521362Z"
@@ -2506,4 +2555,4 @@ entries:
     urls:
     - https://twenty-20.github.io/helm-charts/youtrack-1.0.0.tgz
     version: 1.0.0
-generated: "2026-08-26T14:59:06.542958649Z"
+generated: "2026-08-27T11:31:59.946946507Z"
