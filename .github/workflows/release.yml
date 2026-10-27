@@ -34,7 +34,7 @@ jobs:
         echo "CR_PASSPHRASE_FILE=.gpg/passphrase.txt" >> $GITHUB_ENV
 
     - name: Release charts
-      uses: helm/chart-releaser-action@v1.7.0
+      uses: helm/chart-releaser-action@v1.8.0
       with:
         config: cr.yaml
         skip_existing: true    # Skip package upload if release/tag already exists.
