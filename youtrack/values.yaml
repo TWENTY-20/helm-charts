@@ -76,6 +76,18 @@ persistence:
       # Example (T-Cloud Public EVS):
       # everest.io/disk-volume-type: SSD
 
+  # Use one PVC for data, conf and logs. Backups remain separate.
+  sharedVolume:
+    # ⚠️ WARNING: Existing installations start with an empty PVC when enabled.
+    # Create a backup first and restore it through the setup wizard.
+    enabled: false
+    name: youtrack-shared
+    storageClassName: csi-disk-default
+    storageSize: 56Gi
+    accessModes:
+      - ReadWriteOnce
+    annotations: {}
+
   temp:
     enabled: false # default false, helpful when Upgrade/SetUp from Backup which is bigger then 20Gi
     name: youtrack-temp

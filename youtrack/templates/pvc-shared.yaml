@@ -1,0 +1,18 @@
+{{- if .Values.persistence.sharedVolume.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.persistence.sharedVolume.name }}
+  namespace: {{ .Release.Namespace }}
+  {{- with .Values.persistence.sharedVolume.annotations }}
+  annotations:
+{{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  storageClassName: {{ .Values.persistence.sharedVolume.storageClassName }}
+  accessModes:
+{{- toYaml .Values.persistence.sharedVolume.accessModes | nindent 4 }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.sharedVolume.storageSize }}
+{{- end }}

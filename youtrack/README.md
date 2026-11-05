@@ -282,6 +282,28 @@ Check available storage classes in your cluster:
 kubectl get storageclass
 ```
 
+##### Shared data volume (optional)
+
+By default, data, conf and logs use separate PVCs. Enable
+`persistence.sharedVolume` to store them in the `data`, `conf` and `logs`
+subdirectories of one PVC. The backup PVC remains separate.
+
+> **WARNING:** Existing installations start with an empty shared PVC when this option is
+> enabled. Create a backup first and restore it through the setup wizard. The
+> previous data, conf and logs PVCs may be deleted when this change is applied.
+
+```yaml
+persistence:
+  sharedVolume:
+    enabled: true
+    name: youtrack-shared
+    storageClassName: csi-disk-default
+    storageSize: 56Gi
+    accessModes:
+      - ReadWriteOnce
+    annotations: {}
+```
+
 ---
 #### <span style="color:yellow">NetworkPolicy deny-all</span>
 When using deny-all NetworkPolicy in your cluster & using Traefik you can simply whitelist Traefik via `values.yaml`

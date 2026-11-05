@@ -26,6 +26,11 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
+        {{- if .Values.persistence.sharedVolume.enabled }}
+        - name: {{ .Values.persistence.sharedVolume.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.sharedVolume.name }}
+        {{- else }}
         - name: {{ .Values.persistence.data.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.data.name }}
@@ -35,6 +40,7 @@ spec:
         - name: {{ .Values.persistence.logs.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.logs.name }}
+        {{- end }}
         - name: {{ .Values.persistence.backups.name }}
           persistentVolumeClaim:
             claimName: {{ .Values.persistence.backups.name }}
@@ -65,6 +71,21 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
+        {{- if .Values.persistence.sharedVolume.enabled }}
+        - name: init-shared-volume
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/bin/sh", "-ec"]
+          args:
+            - mkdir -p /mnt/youtrack/data /mnt/youtrack/conf /mnt/youtrack/logs
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          volumeMounts:
+            - name: {{ .Values.persistence.sharedVolume.name }}
+              mountPath: /mnt/youtrack
+          resources:
+            {{- toYaml .Values.initContainerResources | nindent 12 }}
+        {{- end }}
         {{- with .Values.extraInitContainers }}
         {{- tpl (toYaml .) $ | nindent 8 }}
         {{- end }}
@@ -74,12 +95,24 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           volumeMounts:
+            {{- if .Values.persistence.sharedVolume.enabled }}
+            - name: {{ .Values.persistence.sharedVolume.name }}
+              mountPath: /opt/youtrack/data
+              subPath: data
+            - name: {{ .Values.persistence.sharedVolume.name }}
+              mountPath: /opt/youtrack/conf
+              subPath: conf
+            - name: {{ .Values.persistence.sharedVolume.name }}
+              mountPath: /opt/youtrack/logs
+              subPath: logs
+            {{- else }}
             - name: {{ .Values.persistence.data.name }}
               mountPath: /opt/youtrack/data
             - name: {{ .Values.persistence.conf.name }}
               mountPath: /opt/youtrack/conf
             - name: {{ .Values.persistence.logs.name }}
               mountPath: /opt/youtrack/logs
+            {{- end }}
             - name: {{ .Values.persistence.backups.name }}
               mountPath: /opt/youtrack/backups
             {{- if .Values.persistence.temp.enabled }}
@@ -122,12 +155,24 @@ spec:
             {{- end }}
           {{- end }}
           volumeMounts:
+            {{- if .Values.persistence.sharedVolume.enabled }}
+            - name: {{ .Values.persistence.sharedVolume.name }}
+              mountPath: /opt/youtrack/data
+              subPath: data
+            - name: {{ .Values.persistence.sharedVolume.name }}
+              mountPath: /opt/youtrack/conf
+              subPath: conf
+            - name: {{ .Values.persistence.sharedVolume.name }}
+              mountPath: /opt/youtrack/logs
+              subPath: logs
+            {{- else }}
             - name: {{ .Values.persistence.data.name }}
               mountPath: /opt/youtrack/data
             - name: {{ .Values.persistence.conf.name }}
               mountPath: /opt/youtrack/conf
             - name: {{ .Values.persistence.logs.name }}
               mountPath: /opt/youtrack/logs
+            {{- end }}
             - name: {{ .Values.persistence.backups.name }}
               mountPath: /opt/youtrack/backups
             {{- if .Values.persistence.temp.enabled }}
