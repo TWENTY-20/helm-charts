@@ -3,8 +3,8 @@ name: espocrm
 description: A Helm chart for deploying EspoCRM on Kubernetes
 type: application
 icon: https://raw.githubusercontent.com/TWENTY-20/helm-charts/main/espocrm/icon.png
-version: 2.0.9
-appVersion: "10.1.1"
+version: 2.0.10
+appVersion: "10.1.3"
 
 home: https://www.espocrm.com
 
