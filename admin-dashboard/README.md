@@ -7,7 +7,7 @@ This flexible and lightweight Helm chart deploys the Admin-Dashboard on a Kubern
 It offers customization via the `values.yaml`, allowing you to modify the HTML content of your Admin-Dashboard easily.
 ---
 ## ✨ Features
-- Runs the official nginx-unprivileged [Docker image](https://hub.docker.com/r/nginxinc/nginx-unprivileged)
+- Runs the official nginx-unprivileged [Docker image](https://hub.docker.com/r/nginx/nginx-unprivileged)
 - No persistent storage needed
 - Traefik compatible
 - Easy whitelisting of Traefik deny-all setups
