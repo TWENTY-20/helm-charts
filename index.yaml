@@ -2,6 +2,31 @@ apiVersion: v1
 entries:
   admin-dashboard:
   - apiVersion: v2
+    appVersion: 1.31.9-alpine-slim
+    created: "2026-11-18T22:01:30.888905366Z"
+    description: A Helm chart for deploying admin-dashboard on Kubernetes
+    digest: 1a2656847d5b9ffa05279f1b74087cd452665c4a37f97c35e07b00fe8f0fdd73
+    home: https://twenty20.de
+    icon: https://raw.githubusercontent.com/TWENTY-20/helm-charts/main/admin-dashboard/icon.png
+    keywords:
+    - admin
+    - dashboard
+    - admin-dashboard
+    - twenty20
+    - k8s
+    - kubernetes
+    maintainers:
+    - email: it-factory@twenty20.de
+      name: twenty20
+      url: https://twenty20.de
+    name: admin-dashboard
+    sources:
+    - https://github.com/TWENTY-20/helm-charts/tree/main/admin-dashboard
+    type: application
+    urls:
+    - https://github.com/TWENTY-20/helm-charts/releases/download/admin-dashboard-1.1.1/admin-dashboard-1.1.1.tgz
+    version: 1.1.1
+  - apiVersion: v2
     appVersion: 1.29.5-alpine-slim
     created: "2026-06-12T10:42:34.490210215Z"
     description: A Helm chart for deploying admin-dashboard on Kubernetes
@@ -2998,4 +3023,4 @@ entries:
     urls:
     - https://twenty-20.github.io/helm-charts/youtrack-1.0.0.tgz
     version: 1.0.0
-generated: "2026-11-18T21:13:50.37550197Z"
+generated: "2026-11-18T22:01:30.889071916Z"
