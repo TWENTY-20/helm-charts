@@ -1,7 +1,7 @@
 image:
   repository: jetbrains/youtrack
   pullPolicy: Always
-  tag: 2026.2.19840
+  tag: 2026.2.19862
 
 # Secrets for pulling images from a private container registry
 imagePullSecrets: []
